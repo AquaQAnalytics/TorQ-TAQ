@@ -75,6 +75,6 @@ fifoloader:{[filetype;filetoload;optionalparams]
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
   system"rm ",fifo;
 
- }
+ };
 
 

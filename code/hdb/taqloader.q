@@ -64,7 +64,8 @@ fifoloader:{[file;params]
  system"rm -f ",fifo," && mkfifo ",fifo;
  system"gunzip -c ",(1_string filetoload)," > ",fifo," &";
  .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string file];`:fifo;params`chunksize];
- system"rm fifo"
+ system"rm ",fifo;
+
  }
 
 

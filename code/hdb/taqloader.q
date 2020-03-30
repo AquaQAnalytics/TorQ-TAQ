@@ -69,7 +69,7 @@ fifoloader:{[filetype;filetoload;optionalparams]
   // remove fifo if it exists then make new one
   system"rm -f ",fifo," && mkfifo ",fifo;
   system"gunzip -c ",(1_string filetoload)," > ",fifo," &";
-  .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];`:fifo;params`chunksize];
+  .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
   system"rm ",fifo;
 
  }

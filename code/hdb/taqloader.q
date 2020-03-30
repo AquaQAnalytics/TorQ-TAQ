@@ -54,16 +54,22 @@ nbboparams:defaults,(!) . flip (
 loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload];filetoload;quoteparams`chunksize]}
 
 // example use of fifo stremaing algorithm for trades table
-fifoloader:{[file;params]
+fifoloader:{[filetype;filetoload;optionalparams]
+  
+  params:$[filetype=`trade;tradeparams,optionalparams;filetype=`quote;
+   quoteparams,optionalparams;nbboparams,optionalparams];
 
   // make fifo with PID attached
   fifo:"fifo",string .z.i;
   // extract date
-  date: "D"$-8#-3_string file;
+  date: "D"$-8#-3_string filetoload;
+  params[`date]:date;
+  // override `dbdir to temp hdb dir
+  params[`dbdir]:params[`hdbtemp];
   // remove fifo if it exists then make new one
   system"rm -f ",fifo," && mkfifo ",fifo;
   system"gunzip -c ",(1_string filetoload)," > ",fifo," &";
-  .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string file];`:fifo;params`chunksize];
+  .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];`:fifo;params`chunksize];
   system"rm ",fifo;
 
  }

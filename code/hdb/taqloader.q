@@ -33,7 +33,7 @@ quoteparams:defaults,(!) . flip (
          (`date;.z.d)
          );
 
-nbboparams::defaults,(!) . flip (
+nbboparams:defaults,(!) . flip (
          (`headers;`ticktime`exch`sym`bid`bidsize`ask`asksize`cond`sequence`bbo`qbbo`cqs`qcond`bbex`bbprice`bbsize`bbmmid`baex`baprice`basize`bammid`luldind`nbboind`parttime);
          (`types;"JSSFIFISJCC  CCCFI*CFI*CC J");
          (`tablename;`nbbo);
@@ -47,7 +47,7 @@ nbboparams::defaults,(!) . flip (
  	   delete from 
 	   (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ .taq22.timeconverter[ticktime],parttime:params[`date]+ .taq22.timeconverter[parttime] from data) 
 	  where null ticktime});
-         (`date;D)
+         (`date;.z.d)
         );
 
 // example use of streaming algorithm

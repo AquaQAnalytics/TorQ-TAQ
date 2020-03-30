@@ -54,10 +54,11 @@ nbboparams::defaults,(!) . flip (
 loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload];filetoload;quoteparams`chunksize]}
 
 // example use of fifo stremaing algorithm for trades table
-fifoloader:{
- system"rm -f fifo && mkfifo fifo";
- system"gunzip -c ",(1_string filetoload)," > fifo &";
- .Q.fpn[.loader.loaddata[tradeparams,(enlist`filename)!enlist `$-3_string filetoload];`:fifo;tradeparams`chunksize];
+fifoloader:{[file;params]
+ fifo:"fifo"$-8#-3_string file;
+ system"rm -f ",fifo," && mkfifo ",fifo;
+ system"gunzip -c ",(1_string filetoload)," > ",fifo," &";
+ .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string file];`:fifo;params`chunksize];
  system"rm fifo"
  }
 

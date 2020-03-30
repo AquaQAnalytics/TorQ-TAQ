@@ -57,7 +57,7 @@ loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload
 fifoloader:{[file;params]
 
   // make fifo with PID attached
-  fifo:"fifo"$-8#-3_string file;
+  fifo:"fifo",string .z.i;
   // extract date
   date: "D"$-8#-3_string file;
   // remove fifo if it exists then make new one

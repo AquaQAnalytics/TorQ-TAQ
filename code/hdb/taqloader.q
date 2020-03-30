@@ -1,8 +1,10 @@
 hdbdir:hsym`$getenv[`KDBHDB]
-filetoload:`:/home/rsketch/EQY_US_ALL_TRADE_20180730.gz
+filetoload:`:/home/rsketch/EQY_US_ALL_TRADE_20180730.gz // for testing
 
 timeconverter:{"n"$sum 3600000000000 60000000000 1000000000 1*deltas[d*x div/: d]div d:10000000000000 100000000000 1000000000 1}
 defaults:`chunksize`partitioncol`partitiontype`compression`gc!(`int$100*2 xexp 20;`ticktime;`date;();0b)
+optionalparams:(enlist `hdbtemp) ! enlist `:/home/rsketch/testdb // for testing
+
 
 // set the schema for each table
 tradeparams:defaults,(!) . flip (
@@ -56,6 +58,7 @@ loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload
 // example use of fifo stremaing algorithm for trades table
 fifoloader:{[filetype;filetoload;optionalparams]
   
+  // define params based on filetype
   params:$[filetype=`trade;tradeparams,optionalparams;filetype=`quote;
    quoteparams,optionalparams;nbboparams,optionalparams];
 

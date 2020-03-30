@@ -55,7 +55,12 @@ loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload
 
 // example use of fifo stremaing algorithm for trades table
 fifoloader:{[file;params]
+
+// make fifo with PID attached
  fifo:"fifo"$-8#-3_string file;
+ // extract date
+ date: "D"$-8#-3_string file;
+ // remove fifo if it exists then make new one
  system"rm -f ",fifo," && mkfifo ",fifo;
  system"gunzip -c ",(1_string filetoload)," > ",fifo," &";
  .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string file];`:fifo;params`chunksize];

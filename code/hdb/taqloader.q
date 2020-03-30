@@ -65,7 +65,7 @@ fifoloader:{[filetype;filetoload;optionalparams]
   // make fifo with PID attached
   fifo:"fifo",string .z.i;
   // extract date
-  date: "D"$-8#-3_string filetoload;
+  date:"D"$-8#-3_string filetoload;
   params[`date]:date;
   // override `dbdir to temp hdb dir
   params[`dbdir]:params[`hdbtemp];

@@ -59,9 +59,10 @@ loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload
 fifoloader:{[filetype;filetoload;optionalparams]
   
   // define params based on filetype
-  params:$[filetype=`trade;tradeparams,optionalparams;filetype=`quote;
-   quoteparams,optionalparams;nbboparams,optionalparams];
-
+  params:$[filetype=`trade;tradeparams,optionalparams;
+    filetype=`quote;quoteparams,optionalparams;
+    filetype=`nbboparams;nbboparams,optionalparams;
+    .lg.e[`fifoloader;(string filetype)," is an unknown or unsupported filetype"]];
   // make fifo with PID attached
   fifo:"fifo",string .z.i;
   // extract date

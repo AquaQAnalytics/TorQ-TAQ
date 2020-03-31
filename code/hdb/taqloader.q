@@ -64,7 +64,7 @@ fifoloader:{[filetype;filetoload;optionalparams]
     filetype=`nbboparams;nbboparams,optionalparams;
     .lg.e[`fifoloader;(string filetype)," is an unknown or unsupported filetype"]];
   // make fifo with PID attached
-  fifo:"fifo",string .z.i;
+  fifo:"/tmp/fifo",string .z.i;
   // extract date
   date:"D"$-8#-3_string filetoload;
   params[`date]:date;

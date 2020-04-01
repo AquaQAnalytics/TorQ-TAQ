@@ -59,10 +59,21 @@ loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload
 fifoloader:{[filetype;filetoload;optionalparams]
   
   // define params based on filetype
-  params:$[filetype=`trade;tradeparams,optionalparams;
+  params:$[
+    filetype=`trade;tradeparams,optionalparams;
     filetype=`quote;quoteparams,optionalparams;
     filetype=`nbboparams;nbboparams,optionalparams;
-    .lg.e[`fifoloader;(string filetype)," is an unknown or unsupported filetype"]];
+    .lg.e[`fifoloader;(string filetype)," is an unknown or unsupported filetype"]
+    ];
+
+  // if quote then partition by letter in the temp hdb
+  params[`dbdir]:$[
+    filetype=`trade; string params[`hdbtemp],"/",string filetype;
+    filetype=`quote; `$ (string params[`hdbtemp]),"/",(string filetype), last -12 _ string filetoload;
+    filetype=`nbbo; params[`dbdir];
+    .lg.e[`fifoloader;(string filetype), " is an unknown or unsupported file type"]
+    ];
+
   // make fifo with PID attached
   fifo:"/tmp/fifo",string .z.i;
   // extract date

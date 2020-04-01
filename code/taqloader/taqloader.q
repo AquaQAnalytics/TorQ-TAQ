@@ -62,7 +62,7 @@ fifoloader:{[filetype;filetoload;optionalparams]
   params:$[
     filetype=`trade;tradeparams,optionalparams;
     filetype=`quote;quoteparams,optionalparams;
-    filetype=`nbboparams;nbboparams,optionalparams;
+    filetype=`nbbo;nbboparams,optionalparams;
     .lg.e[`fifoloader;(string filetype)," is an unknown or unsupported filetype"]
     ];
 

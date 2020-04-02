@@ -47,7 +47,7 @@ nbboparams:defaults,(!) . flip (
 	// add in blank fields which don't exist any more 
  	update mmid:(count ticktime)#enlist "",bidexch:`,askexch:`,corr:" ",bbmmloc:`,bbmmdeskloc:" ",bammloc:`,bammdeskloc:" " from 
  	   delete from 
-	   (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ .taq22.timeconverter[ticktime],parttime:params[`date]+ .taq22.timeconverter[parttime] from data) 
+	   (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data) 
 	  where null ticktime});
          (`date;.z.d)
         );

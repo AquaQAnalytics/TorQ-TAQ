@@ -1,3 +1,4 @@
 host,port,proctype,procname,U,localtime,g,T,w,load,startwithall,extras,qcmd
-localhost,{KDBBASEPORT}+1,discovery,discovery1,${TORQHOME}/appconfig/passwords/accesslist.txt,1,0,,,${KDBCODE}/processes/discovery.q,1,,q
-localhost,{KDBBASEPORT}+2,discovery,discovery1,${TORQHOME}/appconfig/passwords/accesslist.txt,1,0,,,${KDBCODE}/processes/taqloader.q,1,,q
+localhost,{KDBBASEPORT}+1,discovery,discovery1,,1,0,,,${KDBCODE}/processes/discovery.q,1,,q
+localhost,{KDBBASEPORT}+2,taqloader,taqloader1,,1,0,,,${KDBCODE}/processes/taqloader.q,1,,q
+localhost,{KDBBASEPORT}+3,filealerter,filealerter1,,1,0,,,${KDBCODE}/processes/filealerter.q,1,,q

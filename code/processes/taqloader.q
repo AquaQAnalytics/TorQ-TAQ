@@ -63,15 +63,14 @@ fifoloader:{[filetype;filetoload;optionalparams]
     filetype=`trade;tradeparams,optionalparams;
     filetype=`quote;quoteparams,optionalparams;
     filetype=`nbbo;nbboparams,optionalparams;
-    .lg.e[`fifoloader;(string filetype)," is an unknown or unsupported filetype"]
+    `$ (string filetype), " is an unknown or unsupported file type"
     ];
 
   // if quote then partition by letter in the temp hdb
   params[`dbdir]:$[
     filetype=`trade; string params[`hdbtemp],"/",string filetype;
     filetype=`quote; `$ (string params[`hdbtemp]),"/",(string filetype), last -12 _ string filetoload;
-    filetype=`nbbo; params[`dbdir];
-    .lg.e[`fifoloader;(string filetype), " is an unknown or unsupported file type"]
+    string params[`hdbtemp],"/",string filetype;
     ];
 
   // make fifo with PID attached

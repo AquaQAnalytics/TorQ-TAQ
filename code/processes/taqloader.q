@@ -81,8 +81,20 @@ fifoloader:{[filetype;filetoload;optionalparams]
   // remove fifo if it exists then make new one
   system"rm -f ",fifo," && mkfifo ",fifo;
   system"gunzip -c ",(1_string filetoload)," > ",fifo," &";
+  .lg.o[`fifoloader;"Loading ", (string filetoload)]
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
+  .lg.o[`fifoloader;(string filetoload), " has successfully been loaded"]
   system"rm ",fifo;
+
+ };
+
+// function for running system commands
+syscmd:{
+
+  .lg.o[`system;"running system command ",x]; 
+  r:@[{(1b;system x)};x;{.lg.e[`system;"failed to run system command ",x];(0b;x)}];
+  if[not first r; 'last r];
+  last r
 
  };
 

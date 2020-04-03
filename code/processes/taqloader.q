@@ -80,7 +80,7 @@ fifoloader:{[filetype;filetoload;optionalparams]
   params[`date]:date;
   // remove fifo if it exists then make new one
   syscmd["rm -f ",fifo," && mkfifo ",fifo];
-  syscmd["gunzip -c ",(1_string filetoload)," > ",fifo," &"];
+  syscmd["gunzip -c ",(.os.pth[filetoload])," > ",fifo," &"];
   .lg.o[`fifoloader;"Loading ", (string filetoload)]
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
   .lg.o[`fifoloader;(string filetoload), " has successfully been loaded"]

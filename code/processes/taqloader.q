@@ -11,8 +11,8 @@ tradeparams:defaults,(!) . flip (
          (`types;"JSSSIFBIJICCJ");
          (`tablename;`trade);
          (`separator;enlist"|");
-         (`dbdir;hsym hdbdir);             // this parameter is defined in the top level taqloader script
-         (`symdir;hsym hdbdir);            // where we enumerate against
+         (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
+         (`symdir;hdbdir);            // where we enumerate against
          (`dataprocessfunc;{[params;data] `sym`ticktime`exch`cond`size`price`stop`corr`sequence`cts`trf xcols delete from
         (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data) where null ticktime});
          (`date;.z.d)
@@ -39,8 +39,8 @@ nbboparams:defaults,(!) . flip (
          (`types;"JSSFIFISJCC  CCCFI*CFI*CC J");
          (`tablename;`nbbo);
          (`separator;enlist"|");
-         (`dbdir;hsym`$ .taq22.hdbdir);             // this parameter is defined in the top level taqloader script
-         (`symdir;hsym`$ .taq22.hdbdir);            // where we enumerate against
+         (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
+         (`symdir;hdbdir);            // where we enumerate against
          (`dataprocessfunc;{[params;data] 
 	`sym`ticktime`exch`bid`bidsize`ask`asksize`cond`mmid`bidexch`askexch`sequence`bbo`qbbo`corr`cqs`qcond`bbex`bbprice`bbsize`bbmmid`bbmmloc`bbmmdeskloc`baex`baprice`basize`bammid`bammloc`bammdeskloc`luldind`nbboind`parttime xcols 
 	// add in blank fields which don't exist any more 
@@ -80,9 +80,9 @@ fifoloader:{[filetype;filetoload;optionalparams]
   // remove fifo if it exists then make new one
   syscmd["rm -f ",fifo," && mkfifo ",fifo];
   syscmd["gunzip -c ",(.os.pth[filetoload])," > ",fifo," &"];
-  .lg.o[`fifoloader;"Loading ",(string filetoload)]
+  .lg.o[`fifoloader;"Loading ",(string filetoload)];
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
-  .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"]
+  .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
   syscmd["rm ",fifo];
 
  };

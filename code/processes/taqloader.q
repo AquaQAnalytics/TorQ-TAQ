@@ -63,7 +63,7 @@ fifoloader:{[filetype;filetoload;optionalparams]
     filetype=`trade;tradeparams,optionalparams;
     filetype=`quote;quoteparams,optionalparams;
     filetype=`nbbo;nbboparams,optionalparams;
-    `$ (string filetype), " is an unknown or unsupported file type"
+    [.lg.e[`fifoloader;errmsg:(string filetype), " is an unknown or unsupported file type"]; 'errmsg]
     ];
 
   // if quote then partition by letter in the temp hdb
@@ -90,12 +90,10 @@ fifoloader:{[filetype;filetoload;optionalparams]
 
 // function for running system commands
 syscmd:{
-
   .lg.o[`system;"running system command ",x]; 
   r:@[{(1b;system x)};x;{.lg.e[`system;"failed to run system command ",x];(0b;x)}];
   if[not first r; 'last r];
   last r
-
  };
 
 

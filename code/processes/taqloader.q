@@ -5,7 +5,6 @@ timeconverter:{"n"$sum 3600000000000 60000000000 1000000000 1*deltas[d*x div/: d
 defaults:`chunksize`partitioncol`partitiontype`compression`gc!(`int$100*2 xexp 20;`ticktime;`date;();0b)
 optionalparams:(enlist `hdbtemp) ! enlist `:/home/rsketch/testdb // for testing
 
-
 // set the schema for each table
 tradeparams:defaults,(!) . flip (
          (`headers;`ticktime`exch`sym`cond`size`price`stop`corr`sequence`tradeid`cts`trf`parttime);
@@ -63,13 +62,13 @@ fifoloader:{[filetype;filetoload;optionalparams]
     filetype=`trade;tradeparams,optionalparams;
     filetype=`quote;quoteparams,optionalparams;
     filetype=`nbbo;nbboparams,optionalparams;
-    [.lg.e[`fifoloader;errmsg:(string filetype), " is an unknown or unsupported file type"]; 'errmsg]
+    [.lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"];'errmsg]
     ];
 
   // if quote then partition by letter in the temp hdb
   params[`dbdir]:$[
-    filetype=`trade; string params[`hdbtemp],"/",string filetype;
-    filetype=`quote; `$ (string params[`hdbtemp]),"/",(string filetype), last -12 _ string filetoload;
+    filetype=`trade;string params[`hdbtemp],"/",string filetype;
+    filetype=`quote;`$(string params[`hdbtemp]),"/",(string filetype),last -12_string filetoload;
     string params[`hdbtemp],"/",string filetype;
     ];
 
@@ -81,9 +80,9 @@ fifoloader:{[filetype;filetoload;optionalparams]
   // remove fifo if it exists then make new one
   syscmd["rm -f ",fifo," && mkfifo ",fifo];
   syscmd["gunzip -c ",(.os.pth[filetoload])," > ",fifo," &"];
-  .lg.o[`fifoloader;"Loading ", (string filetoload)]
+  .lg.o[`fifoloader;"Loading ",(string filetoload)]
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
-  .lg.o[`fifoloader;(string filetoload), " has successfully been loaded"]
+  .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"]
   syscmd["rm ",fifo];
 
  };

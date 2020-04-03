@@ -78,8 +78,6 @@ fifoloader:{[filetype;filetoload;optionalparams]
   // extract date
   date:"D"$-8#-3_string filetoload;
   params[`date]:date;
-  // override `dbdir to temp hdb dir
-  params[`dbdir]:params[`hdbtemp];
   // remove fifo if it exists then make new one
   system"rm -f ",fifo," && mkfifo ",fifo;
   system"gunzip -c ",(1_string filetoload)," > ",fifo," &";

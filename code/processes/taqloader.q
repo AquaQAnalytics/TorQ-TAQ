@@ -67,9 +67,9 @@ fifoloader:{[filetype;filetoload;optionalparams]
 
   // if quote then partition by letter in the temp hdb
   params[`dbdir]:$[
-    filetype=`trade;string params[`hdbtemp],"/",string filetype;
+    filetype=`trade;`$(string params[`hdbtemp]),"/",(string filetype);
     filetype=`quote;`$(string params[`hdbtemp]),"/",(string filetype),last -12_string filetoload;
-    string params[`hdbtemp],"/",string filetype;
+    `$(string params[`hdbtemp]),"/",(string filetype);
     ];
 
   // make fifo with PID attached

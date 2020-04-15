@@ -55,7 +55,7 @@ nbboparams:defaults,(!) . flip (
 loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload];filetoload;quoteparams`chunksize]}
 
 // example use of fifo stremaing algorithm for trades table
-fifoloader:{[filetype;filetoload;optionalparams]
+loadtaqfile:{[filetype;filetoload;optionalparams]
   
   // define params based on filetype
   params:$[

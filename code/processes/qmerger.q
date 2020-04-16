@@ -5,26 +5,28 @@ mergedsplits:(`$'.Q.A)!26#0b
 returnkeys:`loadid`mergestatus`mergemessage`mergelocation`mergeendtime`fullmergestatus
 
 //store paths of temporary directory
-homepath:`$raze":",system["pwd"],"/"
-tempdbpath:`$(string homepath),"tempdb/"
+tempdbpath:`$raze":",system["pwd"],"/tempdb/"
+quotepath:`$(string tempdbpath),"quote/"
 
 //initialise empty temporary hdb
-tempdb:([]date:"d"$();sym:`$();ticktime:"p"$();exch:"s"$();bid:"f"$();bidsize:"i"$();ask:"f"$();asksize:"i"$();cond:`$();mmid:();bidexch:`$();askexch:`$();sequence:"j"$();bbo:"c"$();qbbo:"c"$();corr:"c"$();cqs:"c"$();rpi:"c"$();shortsale:"c"$();cqsind:"c"$();utpind:"c"$();parttime:"p"$())
-tempdbpath set .Q.en[homepath;tempdb]
+empty:([]date:"d"$();sym:`$();ticktime:"p"$();exch:"s"$();bid:"f"$();bidsize:"i"$();ask:"f"$();asksize:"i"$();cond:`$();mmid:();bidexch:`$();askexch:`$();sequence:"j"$();bbo:"c"$();qbbo:"c"$();corr:"c"$();cqs:"c"$();rpi:"c"$();shortsale:"c"$();cqsind:"c"$();utpind:"c"$();parttime:"p"$())
+quotepath set .Q.en[tempdbpath;empty]
 
 //test input directory
 x:`tablepath`tabletype`quote!(`:/home/scooper/taqtest/tables/quoteA;`quote;1)
 
+
+
 //quote merge function
 mergesplits:{
-  system"l ",1_string x[`tablepath];
-  loadid:x[`loadid];
-  tempdbpath upsert .Q.en[homepath;select from quote]
-  a:.z.P;
-  mergedsplits[`$last string x[`tablepath]]:1b;
-  b:`=mergedsplits?0b;
-  return:returnkeys!(1;1b;"successfully merged";`tbi;a;b);
+  system"l ",1_string x[`tablepath];                                    //loads quote tabke to be merged
+  symcols:exec c from meta quote where t="s";                           //execs enumerated columns
+  quote2:@[select from quote;symcols;value];                            //extracts un-enumerated table
+  quotepath upsert .Q.en[tempdbpath;quote2];                            //upserts to temporary db
+  a:.z.P;                                                               //saves completion time
+  mergedsplits[`$last string x[`tablepath]]:1b;                         //updates dic of successfully merged split files
+  b:`=mergedsplits?0b;                                                  //checks if all merges are done
+  return:returnkeys!(x[`loadid];1b;"successfully merged";`tbi;a;b);     //forms return dictionary
   neg[.z.w] return}
 
-movetohdb:{neg[.z.w] 4}
-
+movetohdb:{}

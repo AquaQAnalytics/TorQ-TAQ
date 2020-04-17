@@ -1,4 +1,4 @@
-hdbdir:hsym`$getenv[`KDBHDB]
+hdbdir:hsym`$getenv[`KDBHDB],"/"
 homedir:hsym `$getenv[`TORQHOME]
 tempdbdir:.Q.dd[homedir;`$"tempdb/"]
 quotedir:`$(string tempdbdir),"quote/"
@@ -22,7 +22,7 @@ merge:{quotedir upsert .Q.en[tempdbdir;x];
  }
 
 //quote merge function
-mergesplits:{
+mergesplit:{
   //load quote table from file path
   system"l ",1_string x[`tablepath];
   split::`$last string x[`tablepath];
@@ -44,7 +44,12 @@ mergesplits:{
   neg[.z.w] return
  }
 
-movetohdb:{
-  system"l ",1_string tempdbdir
 
+//moves merged quotes to todays date partition in hdb
+movetohdb:{
+  system"l ",1_string tempdbdir;
+  symcols:exec c from meta quote where t="s";
+  quote:@[select from quote;symcols;value];
+  .Q.dpft[hdbdir;.z.d;`sym;`quote];
+  reset[]
  }

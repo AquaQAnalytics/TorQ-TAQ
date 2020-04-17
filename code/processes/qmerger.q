@@ -1,9 +1,10 @@
 hdbdir:hsym`$getenv[`KDBHDB]
+homedir:hsym `$getenv[`TORQHOME]
+tempdbdir:.Q.dd[homedir;`$"tempdb/"]
+quotedir:`$(string tempdbdir),"quote/"
 
 //initialise empty temporary hdb
 empty:([]date:"d"$();sym:`$();ticktime:"p"$();exch:"s"$();bid:"f"$();bidsize:"i"$();ask:"f"$();asksize:"i"$();cond:`$();mmid:();bidexch:`$();askexch:`$();sequence:"j"$();bbo:"c"$();qbbo:"c"$();corr:"c"$();cqs:"c"$();rpi:"c"$();shortsale:"c"$();cqsind:"c"$();utpind:"c"$();parttime:"p"$())
-tempdbdir:`$raze":",system["pwd"],"/tempdb/"
-quotedir:`$(string tempdbdir),"quote/"
 
 //test input directory
 x:`tablepath`tabletype`loadid!(`:/home/scooper/taqtest/tables/quoteA;`quote;1)

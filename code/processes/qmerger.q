@@ -1,19 +1,24 @@
+hdbdir:hsym`$getenv[`KDBHDB]
+
 //initialise empty temporary hdb
 empty:([]date:"d"$();sym:`$();ticktime:"p"$();exch:"s"$();bid:"f"$();bidsize:"i"$();ask:"f"$();asksize:"i"$();cond:`$();mmid:();bidexch:`$();askexch:`$();sequence:"j"$();bbo:"c"$();qbbo:"c"$();corr:"c"$();cqs:"c"$();rpi:"c"$();shortsale:"c"$();cqsind:"c"$();utpind:"c"$();parttime:"p"$())
-tempdbpath:`$raze":",system["pwd"],"/tempdb/"
-quotepath:`$(string tempdbpath),"quote/"
-quotepath set .Q.en[tempdbpath;empty]
-
-//dictionary to keep track of merged split files
-merged:(`$'.Q.A)!26#0b
+tempdbdir:`$raze":",system["pwd"],"/tempdb/"
+quotedir:`$(string tempdbdir),"quote/"
 
 //test input directory
 x:`tablepath`tabletype`loadid!(`:/home/scooper/taqtest/tables/quoteA;`quote;1)
 
+//resets temporary db
+reset:{
+  merged::(`$'.Q.A)!26#0b;
+  quotedir set .Q.en[tempdbdir;empty]
+ }
+
 //base merge function
-merge:{quotepath upsert .Q.en[tempdbpath;x];
+merge:{quotedir upsert .Q.en[tempdbdir;x];
   merged[split]:1b;
-  return:"Successful"}
+  return:"Successful"
+ }
 
 //quote merge function
 mergesplits:{
@@ -34,7 +39,11 @@ mergesplits:{
   //build return dictionary
   b:`=merged?0b;
   returnkeys:`loadid`mergelocation`fullmergestatus;
-  return:result,returnkeys!(x[`loadid];tempdbpath;b);
-  neg[.z.w] return}
+  return:result,returnkeys!(x[`loadid];tempdbdir;b);
+  neg[.z.w] return
+ }
 
-movetohdb:{}
+movetohdb:{
+  system"l ",1_string tempdbdir
+
+ }

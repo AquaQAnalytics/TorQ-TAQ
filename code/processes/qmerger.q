@@ -1,6 +1,6 @@
 hdbdir:hsym`$getenv[`KDBHDB],"/"
 homedir:hsym `$getenv[`TORQHOME]
-tempdbdir:.Q.dd[homedir;`$"tempdb/"]
+tempdbdir:hsym `$getenv[`TORQTAQTEMPDB]
 quotedir:`$(string tempdbdir),"quote/"
 
 //initialise empty temporary hdb
@@ -37,8 +37,7 @@ mergesplit:{
   //build return dictionary
   b:`=merged?0b;
   returnkeys:`loadid`mergelocation`fullmergestatus;
-  return:result,returnkeys!(x[`loadid];tempdbdir;b);
-  neg[.z.w] return
+  return:result,returnkeys!(x[`loadid];tempdbdir;b)
  }
 
 

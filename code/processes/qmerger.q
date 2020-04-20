@@ -15,7 +15,7 @@ reset:{
 //base merge function
 merge:{quotedir upsert .Q.en[tempdbdir;x];
   merged[split]:1b;
-  return:"Successful"
+  return:1b
  }
 
 //quote merge function
@@ -30,7 +30,7 @@ mergesplit:{
 
   //attempt to merge and keys result
   a:(0b;"Unsuccessful: already merged";.z.P);
-  a:$[0b=merged[split];@[{(1b;merge x;.z.P)};tab;{(0b;"Unsuccessful:",x;.z.P)}];a];
+  a:$[0b=merged[split];@[{(merge x;"Success";.z.P)};tab;{(0b;"Unsuccessful:",x;.z.P)}];a];
   result:`mergestatus`mergemessage`mergeendtime!a;
   merged[split]:1b;
 
@@ -42,6 +42,7 @@ mergesplit:{
 
 
 //moves merged quotes to todays date partition in hdb
+/
 movetohdb:{
   system"l ",1_string tempdbdir;
   symcols:exec c from meta quote where t="s";
@@ -49,7 +50,7 @@ movetohdb:{
   .Q.dpft[hdbdir;.z.d;`sym;`quote];
   reset[]
  }
-
+\
 
 //test input directory
 x:`tablepath`tabletype`loadid!(`:/home/scooper/taqtest/tables/quoteA;`quote;1)

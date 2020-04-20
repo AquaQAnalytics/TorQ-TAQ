@@ -13,7 +13,10 @@ reset:{
  }
 
 //base merge function
-merge:{quotedir upsert .Q.en[tempdbdir;x];
+merge:{
+  .lg.o[`quotemerger;"Merging split ",string split];
+  quotedir upsert .Q.en[tempdbdir;x];
+  .lg.o[`quotemerger;string[split]," merged"];
   merged[split]:1b;
   return:1b
  }

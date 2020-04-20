@@ -8,18 +8,18 @@ empty:([]date:"d"$();sym:`$();ticktime:"p"$();exch:"s"$();bid:"f"$();bidsize:"i"
 
 //resets temporary db
 reset:{
-  .lg.o[`quotemerger;"clearing temporary db"];
-  merged::(`$'.Q.A)!26#0b;
-  .lg.o[`quotemerger;"temporary db cleared"];
-  quotedir set .Q.en[tempdbdir;empty]
+  //.lg.o[`quotemerger;"clearing temporary db"];
+  merged::([date:26#.z.d;split:`$'.Q.A]status:26#0b);
+  quotedir set .Q.en[tempdbdir;empty];
+  //.lg.o[`quotemerger;"temporary db cleared"];
  }
 
 //base merge function
 merge:{
-  .lg.o[`quotemerger;"Merging split ",string split];
+  //.lg.o[`quotemerger;"Merging split ",string split];
   quotedir upsert .Q.en[tempdbdir;x];
-  .lg.o[`quotemerger;string[split]," merged"];
-  merged[split]:1b;
+  //.lg.o[`quotemerger;string[split]," merged"];
+  merged[(.z.d;split)]:1b;
   return:1b
  }
 
@@ -35,12 +35,12 @@ mergesplit:{
 
   //attempt to merge and keys result
   a:(0b;"Unsuccessful: already merged";.z.P);
-  a:$[0b=merged[split];@[{(merge x;"Success";.z.P)};tab;{(0b;"Unsuccessful:",x;.z.P)}];a];
+  a:$[merged[(.z.d;split)][`status]=0b;@[{(merge x;"Success";.z.P)};tab;{(0b;"Unsuccessful:",x;.z.P)}];a];
   result:`mergestatus`mergemessage`mergeendtime!a;
-  merged[split]:1b;
+  merged[(.z.d;split)]:1b;
 
   //build return dictionary
-  b:`=merged?0b;
+  b:`=(merged?0b)[`split];
   returnkeys:`loadid`mergelocation`fullmergestatus;
   return:result,returnkeys!(x[`loadid];tempdbdir;b)
  }

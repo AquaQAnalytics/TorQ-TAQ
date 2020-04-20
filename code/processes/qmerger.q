@@ -8,7 +8,9 @@ empty:([]date:"d"$();sym:`$();ticktime:"p"$();exch:"s"$();bid:"f"$();bidsize:"i"
 
 //resets temporary db
 reset:{
+  .lg.o[`quotemerger;"clearing temporary db"];
   merged::(`$'.Q.A)!26#0b;
+  .lg.o[`quotemerger;"temporary db cleared"];
   quotedir set .Q.en[tempdbdir;empty]
  }
 

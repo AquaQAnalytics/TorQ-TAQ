@@ -6,9 +6,6 @@ quotedir:`$(string tempdbdir),"quote/"
 //initialise empty temporary hdb
 empty:([]date:"d"$();sym:`$();ticktime:"p"$();exch:"s"$();bid:"f"$();bidsize:"i"$();ask:"f"$();asksize:"i"$();cond:`$();mmid:();bidexch:`$();askexch:`$();sequence:"j"$();bbo:"c"$();qbbo:"c"$();corr:"c"$();cqs:"c"$();rpi:"c"$();shortsale:"c"$();cqsind:"c"$();utpind:"c"$();parttime:"p"$())
 
-//test input directory
-x:`tablepath`tabletype`loadid!(`:/home/scooper/taqtest/tables/quoteA;`quote;1)
-
 //resets temporary db
 reset:{
   merged::(`$'.Q.A)!26#0b;
@@ -53,3 +50,7 @@ movetohdb:{
   .Q.dpft[hdbdir;.z.d;`sym;`quote];
   reset[]
  }
+
+
+//test input directory
+x:`tablepath`tabletype`loadid!(`:/home/scooper/taqtest/tables/quoteA;`quote;1)

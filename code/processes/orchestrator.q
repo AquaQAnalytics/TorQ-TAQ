@@ -2,7 +2,8 @@
 
 .servers.CONNECTIONS:`taqloader
 .servers.startup[]
-//.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"];
+.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
+h:first exec w from .servers.SERVERS where proctype in `gateway
 
 // table to track progress of each file to load
 fileloading:(
@@ -43,10 +44,3 @@ runload:{
         `loadid`loadendtime!(l;.z.p));
         `taqloader;{x};`finishload;0Wn)
     };
-
-// requst from orhcestrator looks like:
-// loadtaqfile[`filepath`filetype`loadid!(`:/path/to/file;`trade;1)] 
-
-// example use of asyncexecjpt for above IPC message
-// .gw.asyncexecjpt[query;servertypes(list of symbols);joinfunction(lambda);postbackfunction(symbol);timeout(timespan)]
-// allows the client to specify how the results are joined, posted back and timed out.

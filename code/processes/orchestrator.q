@@ -1,6 +1,6 @@
 // initial placeholder for orchestrator WIP
 
-.servers.CONNECTIONS:`taqloader
+.servers.CONNECTIONS:`taqloader`gateway
 .servers.startup[]
 .proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
 h:first exec w from .servers.SERVERS where proctype in `gateway

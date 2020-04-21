@@ -1,5 +1,3 @@
-// initial placeholder for orchestrator WIP
-
 .servers.CONNECTIONS:`taqloader`gateway
 .servers.startup[]
 .proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]

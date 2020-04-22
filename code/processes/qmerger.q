@@ -1,10 +1,10 @@
 hdbdir:hsym`$getenv[`KDBHDB],"/"
 homedir:hsym `$getenv[`TORQHOME]
 tempdbdir:hsym `$getenv[`TORQTAQTEMPDB]
-pardir:`$"/" sv (string tempdbdir;string 2018.01.03;"")
-quotedir:`$(string pardir),"quote/"
+pardir:`$"/" sv (string tempdbdir;string .z.d)
+quotedir:`$"/" sv (string pardir;"quote";"")
 
-/-initialise empty temporary hdb
+/-this empty schema doesnt work yet
 //empty:([]sym:`$();ticktime:"p"$();exch:"s"$();bid:"f"$();bidsize:"i"$();ask:"f"$();asksize:"i"$();cond:`$();mmid:();bidexch:`$();askexch:`$();sequence:"j"$();bbo:"c"$();qbbo:"c"$();corr:"c"$();cqs:"c"$();rpi:"c"$();shortsale:"c"$();cqsind:"c"$();utpind:"c"$();parttime:"p"$())
 
 
@@ -27,30 +27,31 @@ merge:{
 
 /-quote merge function
 mergesplit:{
-
-  split::`$last string x[`tablepath];
+  
+  /-extracts split letter
+  split::`$(reverse string x[`tablepath])[17];
 
   /-attempt to merge and keys result
   a:(0b;"Unsuccessful: already merged";.z.P);
-  a:$[merged[(.z.d;split)][`status]=0b;@[{(merge x;"Success";.z.P)};x[`tablepath];{(0b;"Unsuccessful:",x;.z.P)}];a];
+  a:$[merged[(.z.d;split)][`status];a;@[{(merge x;"Success";.z.P)};x[`tablepath];{(0b;"Unsuccessful:",x;.z.P)}]];
   result:`mergestatus`mergemessage`mergeendtime!a;
-  merged[(.z.d;split)]:1b;
 
   /-build return dictionary
   b:`=(merged?0b)[`split];
   returnkeys:`loadid`mergelocation`fullmergestatus;
-  return:result,returnkeys!(x[`loadid];tempdbdir;b)
+  return:result,returnkeys!(x[`loadid];quotedir;b)
  }
 
 
 /-moves merged quotes to todays date partition in hdb
 
 movetohdb:{
-  system"l ",1_string tempdbdir;
-  symcols:exec c from meta quote where t="s";
-  quote2:@[select from quote;symcols;value];
-  .Q.dpft[hdbdir;.z.d;`sym;`quote2];
+  /.lg.o[`quotemerger;"moving merged quote data to hdb"]
+  system" " sv ("mv"; 1_string[pardir];1_string[hdbdir]);
+  /.lg.o[`quotemerger;"quote data moved to hdb"]
+  /.lg.o[`quotemerger;"resetting temporary database"]
   reset[]
+  /.lg.o[`quotemerger;"temporary database reset"]
   }
 
 

@@ -1,7 +1,7 @@
-.servers.CONNECTIONS:`taqloader`gateway
+.servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
 .proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
-h:first exec w from .servers.SERVERS where proctype in `gateway
+h:.servers.getserverbytype[`gateway;`w;`any]
 
 // table to track progress of each file to load
 fileloading:(

@@ -10,17 +10,17 @@ quotedir:`$"/" sv (string pardir;"quote";"")
 
 /-reset temporary db
 reset:{
-  /.lg.o[`quotemerger;"clearing temporary db"];
+  .lg.o[`quotemerger;"clearing temporary db"];
   merged::([date:26#.z.d;split:`$'.Q.A]status:26#0b);
   quotedir set empty;
-  /.lg.o[`quotemerger;"temporary db cleared"];
+  .lg.o[`quotemerger;"temporary db cleared"];
  }
 
 /-base merge function
 merge:{
-  /.lg.o[`quotemerger;"Merging split ",string split];
+  .lg.o[`quotemerger;"Merging split ",string split];
   quotedir upsert get x;
-  /.lg.o[`quotemerger;string[split]," merged"];
+  .lg.o[`quotemerger;string[split]," merged"];
   merged[(.z.d;split)]:1b;
   return:1b
  }
@@ -46,12 +46,12 @@ mergesplit:{
 /-moves merged quotes to todays date partition in hdb
 
 movetohdb:{
-  /.lg.o[`quotemerger;"moving merged quote data to hdb"]
+  .lg.o[`quotemerger;"moving merged quote data to hdb"]
   system" " sv ("mv"; 1_string[pardir];1_string[hdbdir]);
-  /.lg.o[`quotemerger;"quote data moved to hdb"]
-  /.lg.o[`quotemerger;"resetting temporary database"]
+  .lg.o[`quotemerger;"quote data moved to hdb"]
+  .lg.o[`quotemerger;"resetting temporary database"]
   reset[]
-  /.lg.o[`quotemerger;"temporary database reset"]
+  .lg.o[`quotemerger;"temporary database reset"]
   }
 
 

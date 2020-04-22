@@ -29,7 +29,7 @@ merge:{
 mergesplit:{
   
   /-extracts split letter
-  split::`$(reverse string x[`tablepath])[17];
+  split:`$(reverse string x[`tablepath])[17];
 
   /-attempt to merge and keys result
   a:(0b;"Unsuccessful: already merged";.z.P);

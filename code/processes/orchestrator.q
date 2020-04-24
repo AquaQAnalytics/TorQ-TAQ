@@ -47,8 +47,9 @@ runload:{
     // update monitoring table
     startload[x;y]; 
 
-    (neg h)(`.gw.asyncexecjpt;
-        ({system"sleep 3"; x,(enlist `loadendtime)!enlist .z.p};
-        `loadid`loadendtime!(l;.z.p));
+    // async call to gw to invoke loader process to load file
+    .lg.o[`runload;"initiating loader process"];
+    (neg h)(`.gw.asyncexecjpt; 
+        (`loadtaqfile;filetype;hsym `$filepath;optionalparams);
         `taqloader;{x};`finishload;0Wn)
     };

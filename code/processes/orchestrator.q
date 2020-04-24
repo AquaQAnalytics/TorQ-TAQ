@@ -1,3 +1,4 @@
+optionalparams:@[value;`optionalparams;()!()];
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
 .proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]

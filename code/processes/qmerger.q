@@ -1,18 +1,20 @@
 hdbdir:hsym`$getenv[`KDBHDB],"/"
 homedir:hsym `$getenv[`TORQHOME]
 tempdbdir:hsym `$getenv[`TORQTAQTEMPDB]
-pardir:`$"/" sv (string tempdbdir;string .z.d)
-quotedir:`$"/" sv (string pardir;"quote";"")
-mergedir:`$"/" sv (string homedir;"merged")
-/-this empty schema doesnt work yet
-/empty:([]sym:`$();ticktime:"p"$();exch:"s"$();bid:"f"$();bidsize:"i"$();ask:"f"$();asksize:"i"$();cond:`$();mmid:();bidexch:`$();askexch:`$();sequence:"j"$();bbo:"c"$();qbbo:"c"$();corr:"c"$();cqs:"c"$();rpi:"c"$();shortsale:"c"$();cqsind:"c"$();utpind:"c"$();parttime:"p"$())
+mergedir:hsym `$getenv[`TORQMERGED]
 
-/-reset temporary db
+/-set global directories when needed
+setdirs:{
+  pardir::`$"/" sv (string tempdbdir;string x);
+  quotedir::`$"/" sv (string pardir;"quote";"")
+ }
+
+/-reset temp hdb and update merged table
 reset:{
   .lg.o[`quotemerger;"clearing temporary db"];
-  `merged upsert ([date:26#x;split:`$'.Q.A]status:26#0b);
+  `merged upsert ([date:26#x[`tabledate];split:`$'.Q.A]status:26#0b);
+  empty:select from (get x[`tablepath]) where ticktime<x[`tabledate];
   quotedir set empty;
-  /quotedir set .Q.en[pardir;empty];
   .lg.o[`quotemerger;"temporary db cleared"];
  }
 
@@ -28,13 +30,22 @@ merge:{
 /-quote merge function
 mergesplit:{
   
-  /-extracts split letter
+  setdirs[x[`tabledate]];
+
+  /-extract split letter
   split:`$(reverse string x[`tablepath])[17];
 
-  /-attempt to merge and keys result
+  /-check if date has entries in merged table
+  c:count a:exec distinct date from merged;
+  if[c=a?x[`tabledate];reset[x]];
+
+  /-attempt to merge and key result
   a:(0b;"Unsuccessful: already merged";.z.P);
-  a:$[merged[(.z.d;split)][`status];a;@[{(merge x;"Success";.z.P)};(x[`tablepath];.z.d; split);{(0b;"Unsuccessful:",x;.z.P)}]];
+  a:$[merged[(x[`tabledate];split)][`status];a;@[{(merge x;"Success";.z.P)};(x[`tablepath];x[`tabledate]; split);{(0b;"Unsuccessful:",x;.z.P)}]];
   result:`mergestatus`mergemessage`mergeendtime!a;
+
+  /-save merged table for use in orchestrator process
+  save mergedir;
 
   /-build return dictionary
   b:`=(merged?0b)[`split];
@@ -51,23 +62,16 @@ syscmd:{
  };
 
 
-/-moves merged quotes to todays date partition in hdb
+/-move merged quotes to date partition in hdb
 movetohdb:{
+  setdirs x;
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
 /  system" " sv ("mv"; 1_string[pardir];1_string[hdbdir]);
   syscmd[" " sv ("mv"; 1_string[pardir];1_string[hdbdir])];
   .lg.o[`quotemerger;"quote data moved to hdb"]
-  save  mergedir;
-  .lg.o[`quotemerger;"resetting temporary database"]
-  reset[1+.z.d]
-  .lg.o[`quotemerger;"temporary database reset"]
   }
 
 /-test input directory
-x:`tablepath`tabletype`loadid!(`:/home/scooper/taqtest/tables/quoteA/2018.01.03/quote;`quote;1)
-/-temporary, just to get empty table, will chance to "ticktime<.z.d"
-empty:select from (get x[`tablepath]) where ticktime<2018.01.03
-/-attempts to load merged table, created it if it doesnt exist
+x:`tablepath`tabletype`loadid`tabledate!(`:/home/scooper/taqtest/tables/quoteA/2018.01.03/quote;`quote;1;2018.01.03)
+/-attempt to load merged table, create it if it doesnt exist
 @[{get x};mergedir;{merged::([date:"d"$();split:"s"$()]status:"b"$())}]
-/-resets for the current day on process startup
-reset[.z.d]

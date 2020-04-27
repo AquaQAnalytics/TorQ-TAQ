@@ -33,7 +33,7 @@ startload:{
 finishload:{[q;r] 
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
     // if filetype is a quote invoke merger here
-    if[r[`filetype]=`quote;
+    if[r[`tabletype]=`quote;
         fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.z.P];
         (neg h)(`.gw.asyncexecjpt;
             (`mergesplit;4#r);

@@ -42,6 +42,12 @@ finishload:{[q;r]
       ];
     };
 
+finishmerge:{[q;r]
+    
+    // update merge monitoring data here after merge is complete
+
+  };
+
 // async message to invoke loader process when new nyse file is found
 // this will invoke a loader slave to run loadtaqfile function in taqloader
 runload:{[path;file]

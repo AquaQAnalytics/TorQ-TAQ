@@ -44,7 +44,8 @@ finishload:{[q;r]
 
 // async message to invoke loader process when new nyse file is found
 // this will invoke a loader slave to run loadtaqfile function in taqloader
-runload:{
+runload:{[path;file]
+    
     // define filetype based on name of incoming file from filealerter
     filetype: $[
     ("TRADE" inter file)~"TRADE";`trade;
@@ -53,10 +54,10 @@ runload:{
     [.lg.e[`fifoloader;errmsg:(string file)," is an unknown or unsupported file type"];'errmsg]];
     
     // update monitoring table
-    startload[x;y]; 
+    startload[filepath;filetype];  // defines loadid globally 
 
     // async call to gw to invoke loader process to load file
-    .lg.o[`runload;"initiating loader process"];
+    .lg.o[`runload;"Initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; 
         (`loadtaqfile;filetype;hsym `$filepath;optionalparams);
         `taqloader;{x};`finishload;0Wn)

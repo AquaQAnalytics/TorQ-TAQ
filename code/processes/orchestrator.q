@@ -57,8 +57,8 @@ runload:{[path;file]
     startload[filepath;filetype];  // defines loadid globally 
 
     // async call to gw to invoke loader process to load file
-    .lg.o[`runload;"Initiating loader process"];
+    .lg.o[`runload;"initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; 
-        (`loadtaqfile;filetype;hsym `$filepath;optionalparams);
-        `taqloader;{x};`finishload;0Wn)
+        (`loadtaqfile;filetype;filepath;optionalparams);
+        `taqloader;{x};`finishload;0Wn);
     };

@@ -55,7 +55,7 @@ nbboparams:defaults,(!) . flip (
 loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload];filetoload;quoteparams`chunksize]}
 
 // example use of fifo stremaing algorithm for trades table
-loadtaqfile:{[filetype;filetoload;optionalparams]
+loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
   
   // define params based on filetype
   params:$[
@@ -87,8 +87,10 @@ loadtaqfile:{[filetype;filetoload;optionalparams]
 
     // result to send to postback function to orchestrator
   (!) . flip (
-    (`filepath;hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype));
-    (`filetype;filetype);
+    (`tablepath;hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype));
+    (`tabletype;filetype);
+    (`loadid;loadid);
+    (`tabledate;date);
     (`loadendtime;.z.P)
   )
 

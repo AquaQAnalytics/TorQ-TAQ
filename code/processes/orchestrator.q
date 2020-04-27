@@ -32,12 +32,11 @@ startload:{
 // update record that file has been loaded
 finishload:{[q;r] 
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
-    r[`loadid]:loadid;
     // if filetype is a quote invoke merger here
     if[r[`filetype]=`quote;
         fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.z.P];
         (neg h)(`.gw.asyncexecjpt;
-            (`mergesplit;r);
+            (`mergesplit;4#r);
             `qmerger;{x};`finishmerge;0Wn);
       ];
     };

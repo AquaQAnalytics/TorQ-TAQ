@@ -35,9 +35,8 @@ mergesplit:{
   if[c=a?x[`tabledate];reset[x;quotedir]];
 
   /-attempt to merge and key result
-  a:(0b;"Unsuccessful: already merged";.z.P);
   a:$[merged[(x[`tabledate];split)][`status];
-    a;
+    (0b;"Unsuccessful: already merged";.z.P);
     @[{(merge x;"Success";.z.P)};
       (x[`tablepath];x[`tabledate];split;quotedir);
       {(0b;"Unsuccessful:",x;.z.P)}
@@ -67,7 +66,6 @@ movetohdb:{
   pardir:`$"/" sv (string tempdbdir;string x);
   quotedir:`$"/" sv (string pardir;"quote";"");
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
-/  system" " sv ("mv"; 1_string[pardir];1_string[hdbdir]);
   syscmd[" " sv ("mv"; 1_string[pardir];1_string[hdbdir])];
   .lg.o[`quotemerger;"quote data moved to hdb"]
   }

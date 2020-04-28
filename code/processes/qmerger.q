@@ -1,7 +1,7 @@
 hdbdir:hsym`$getenv[`KDBHDB],"/"
 homedir:hsym `$getenv[`TORQHOME]
 tempdbdir:hsym `$getenv[`TORQTAQTEMPDB]
-mergedir:hsym `$getenv[`TORQMERGED]
+mergedir:hsym `$getenv[`TORQTAQMERGED]
 
 /-set global directories when needed
 setdirs:{
@@ -60,7 +60,6 @@ syscmd:{
   if[not first r; 'last r];
   last r
  };
-
 
 /-move merged quotes to date partition in hdb
 movetohdb:{

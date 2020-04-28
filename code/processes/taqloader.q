@@ -55,7 +55,7 @@ nbboparams:defaults,(!) . flip (
 loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload];filetoload;quoteparams`chunksize]}
 
 // example use of fifo stremaing algorithm for trades table
-fifoloader:{[filetype;filetoload;optionalparams]
+loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
   
   // define params based on filetype
   params:$[
@@ -67,9 +67,9 @@ fifoloader:{[filetype;filetoload;optionalparams]
 
   // if quote then partition by letter in the temp hdb
   params[`dbdir]:$[
-    filetype=`trade;string params[`hdbtemp],"/",string filetype;
+    filetype=`trade;`$(string params[`hdbtemp]),"/",(string filetype);
     filetype=`quote;`$(string params[`hdbtemp]),"/",(string filetype),last -12_string filetoload;
-    string params[`hdbtemp],"/",string filetype;
+    `$(string params[`hdbtemp]),"/",(string filetype);
     ];
 
   // make fifo with PID attached
@@ -84,6 +84,15 @@ fifoloader:{[filetype;filetoload;optionalparams]
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
   .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
   syscmd["rm ",fifo];
+
+    // result to send to postback function to orchestrator
+  (!) . flip (
+    (`tablepath;hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype));
+    (`tabletype;filetype);
+    (`loadid;loadid);
+    (`tabledate;date);
+    (`loadendtime;.z.P)
+  )
 
  };
 

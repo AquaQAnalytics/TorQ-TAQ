@@ -4,4 +4,3 @@ localhost,{KDBBASEPORT}+2,gateway,gateway1,,1,1,,4000,${KDBCODE}/processes/gatew
 localhost,{KDBBASEPORT}+3,orchestrator,orchestrator1,,1,0,,,${KDBCODE}/processes/orchestrator.q,1,-parentproctype filealerter,q
 localhost,{KDBBASEPORT}+4,taqloader,taqloader1,,1,0,,,${KDBCODE}/processes/taqloader.q,1,,q
 localhost,{KDBBASEPORT}+5,qmerger,qmerger1,,1,0,,,${KDBCODE}/processes/qmerger.q,1,,q
-

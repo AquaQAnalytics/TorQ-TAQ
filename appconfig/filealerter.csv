@@ -1,2 +1,2 @@
 path,match,function,newonly,movetodirectory
-/home/rsketch/torqtaq/filedrop,*.csv,rstestfunc,0b,
+/home/rsketch/taqfiles,*.gz,runload,0b,

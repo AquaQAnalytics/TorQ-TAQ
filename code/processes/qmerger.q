@@ -14,9 +14,9 @@ reset:{
 
 /-base merge function
 merge:{
-  .lg.o[`quotemerger;"Merging split ",string split];
+  .lg.o[`quotemerger;"Merging split ",string x[2]];
   x[3] upsert get x[0];
-  .lg.o[`quotemerger;string[split]," merged"];
+  .lg.o[`quotemerger;string[x[2]]," merged"];
   merged[(x[1];x[2])]:1b;
   return:1b
  }
@@ -71,4 +71,4 @@ movetohdb:{
   }
 
 /-attempt to load merged table, create it if it doesnt exist
-@[{get x};mergedir;{merged::([date:"d"$();split:"s"$()]status:"b"$())}]
+merged:@[{get x};mergedir;{([date:"d"$();split:"s"$()]status:"b"$())}]

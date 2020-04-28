@@ -1,7 +1,7 @@
-hdbdir:hsym`$getenv[`KDBHDB],"/"
-homedir:hsym `$getenv[`TORQHOME]
-tempdbdir:hsym `$getenv[`TORQTAQTEMPDB]
-mergedir:hsym `$getenv[`TORQTAQMERGED]
+hdbdir:@[value;`hdbdir;`:hdb]
+homedir:@[value;`homedir;`:home]
+tempdbdir:@[value;`tempdbdir;()!()]
+mergedir:@[value;`mergedir;`:mergedir]
 
 /-reset temp hdb and update merged table
 reset:{

@@ -1,5 +1,6 @@
 host,port,proctype,procname,U,localtime,g,T,w,load,startwithall,extras,qcmd
 localhost,{KDBBASEPORT}+1,discovery,discovery1,,1,0,,,${KDBCODE}/processes/discovery.q,1,,q
 localhost,{KDBBASEPORT}+2,gateway,gateway1,,1,1,,4000,${KDBCODE}/processes/gateway.q,1,,q
-localhost,{KDBBASEPORT}+3,taqloader,taqloader1,,1,0,,,${KDBCODE}/processes/taqloader.q,1,,q
-localhost,{KDBBASEPORT}+4,orchestrator,orchestrator1,,1,0,,,${KDBCODE}/processes/orchestrator.q,1,-parentproctype filealerter,q
+localhost,{KDBBASEPORT}+3,orchestrator,orchestrator1,,1,0,,,${KDBCODE}/processes/orchestrator.q,1,-parentproctype filealerter,q
+localhost,{KDBBASEPORT}+4,taqloader,taqloader1,,1,0,,,${KDBCODE}/processes/taqloader.q,1,,q
+localhost,{KDBBASEPORT}+5,qmerger,qmerger1,,1,0,,,${KDBCODE}/processes/qmerger.q,1,,q

@@ -52,6 +52,7 @@ nbboparams:defaults,(!) . flip (
 
 // function to load all taq files from nyse
 loadtaqfile:{[filetype;filetoload;loadid;tempdb;optionalparams]
+  filepath:raze (getenv[`TORQTAQFILEDROP]),string filetoload;
   // define params based on filetype
   params:$[
     filetype=`trade;tradeparams,optionalparams;
@@ -72,7 +73,7 @@ loadtaqfile:{[filetype;filetoload;loadid;tempdb;optionalparams]
   params[`date]:date;
   // remove fifo if it exists then make new one
   syscmd["rm -f ",fifo," && mkfifo ",fifo];
-  syscmd["gunzip -c ",(.os.pth[filetoload])," > ",fifo," &"];
+  syscmd["gunzip -c ",(filepath)," > ",fifo," &"];
   .lg.o[`fifoloader;"Loading ",(string filetoload)];
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
   .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];

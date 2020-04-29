@@ -1,2 +1,2 @@
-// define temphdb and other optional params
-optionalparams:(enlist `hdbtemp) ! enlist `:/home/rsketch/testdb
+// define any optional parameters to the loaddata function here as necessary
+optionalparams:()!()

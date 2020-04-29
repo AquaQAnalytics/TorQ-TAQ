@@ -2,7 +2,6 @@ optionalparams:@[value;`optionalparams;()!()];
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
 .proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
-h:.servers.getserverbytype[`gateway;`w;`any]
 
 // table to track progress of each file to load
 fileloading:(
@@ -35,6 +34,7 @@ finishload:{[q;r]
     // if filetype is a quote invoke merger here
     if[r[`tabletype]=`quote;
         fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.z.P];
+        h:.servers.getserverbytype[`gateway;`w;`any];
         (neg h)(`.gw.asyncexecjpt;
             (`mergesplit;4#r);
             `qmerger;{x};`finishmerge;0Wn);
@@ -57,10 +57,10 @@ runload:{[path;file]
     file like "*SPLITS*";`quote;
     file like "*NBBO*";`nbbo;
     [.lg.e[`fifoloader;errmsg:(string file)," is an unknown or unsupported file type"];'errmsg]];
-    
     // update monitoring table
     startload[filepath;filetype];  // defines loadid globally 
-
+    // open handle to gateway
+    h:.servers.getserverbytype[`gateway;`w;`any]
     // async call to gw to invoke loader process to load file
     .lg.o[`runload;"Initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; 

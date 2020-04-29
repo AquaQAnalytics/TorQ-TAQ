@@ -1,7 +1,7 @@
 optionalparams:@[value;`optionalparams;()!()];
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
-.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
+//.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
 h:.servers.getserverbytype[`gateway;`w;`any]
 
 // table to track progress of each file to load
@@ -64,6 +64,6 @@ runload:{[path;file]
     // async call to gw to invoke loader process to load file
     .lg.o[`runload;"Initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; 
-        (`loadtaqfile;filetype;filepath;optionalparams);
+        (`loadtaqfile;filetype;filepath;loadid;optionalparams);
         `taqloader;{x};`finishload;0Wn);
     };

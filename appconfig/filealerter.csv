@@ -1,2 +1,2 @@
 path,match,function,newonly,movetodirectory
-/home/rsketch/taq/filedrop,*.gz,runload,0b,
+${TORQTAQFILEDROP},*.gz,runload,0b,

@@ -43,9 +43,7 @@ finishload:{[q;r]
     };
 
 finishmerge:{[q;r]
-    
-    // update merge monitoring data here after merge is complete
-
+    fileloading[loadid]:@[fileloading[loadid];`mergeendtime;:;.z.P];
   };
 
 // async message to invoke loader process when new nyse file is found

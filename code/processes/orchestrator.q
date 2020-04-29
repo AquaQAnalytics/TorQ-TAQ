@@ -53,9 +53,9 @@ runload:{[path;file]
     filepath:hsym`$path,file;
     // define filetype based on name of incoming file from filealerter
     filetype: $[
-    ("TRADE" inter file)~"TRADE";`trade;
-    ("SPLITS" inter file)~"SPLITS";`quote;
-    ("NBBO" inter file)~"NBBO";`nbbo;
+    file like "*TRADE*";`trade;
+    file like "*SPLITS*";`quote;
+    file like "*NBBO*";`nbbo;
     [.lg.e[`fifoloader;errmsg:(string file)," is an unknown or unsupported file type"];'errmsg]];
     
     // update monitoring table

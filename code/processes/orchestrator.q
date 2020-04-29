@@ -61,7 +61,7 @@ runload:{[path;file]
     // update monitoring table
     startload[filepath;filetype];  // defines loadid globally 
     // open handle to gateway
-    h:.servers.getserverbytype[`gateway;`w;`any]
+    h:.servers.getserverbytype[`gateway;`w;`any];
     // async call to gw to invoke loader process to load file
     .lg.o[`runload;"Initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; 

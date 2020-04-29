@@ -50,12 +50,8 @@ nbboparams:defaults,(!) . flip (
          (`date;.z.d)
         );
 
-// example use of streaming algorithm
-loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload];filetoload;quoteparams`chunksize]}
-
 // example use of fifo stremaing algorithm for trades table
 loadtaqfile:{[filetype;filetoload;loadid;tempdb;optionalparams]
-  
   // define params based on filetype
   params:$[
     filetype=`trade;tradeparams,optionalparams;
@@ -63,14 +59,12 @@ loadtaqfile:{[filetype;filetoload;loadid;tempdb;optionalparams]
     filetype=`nbbo;nbboparams,optionalparams;
     [.lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"];'errmsg]
     ];
-
   // if quote then partition by letter in the temp hdb
   params[`dbdir]:$[
     filetype=`trade;`$(string params[`symdir]),"/",(string filetype);
     filetype=`quote;`$(string params[`symdir]),"/",(string filetype),last -12_string filetoload;
     `$(string params[`symdir]),"/",(string filetype);
     ];
-
   // make fifo with PID attached
   fifo:"/tmp/fifo",string .z.i;
   // extract date
@@ -83,7 +77,6 @@ loadtaqfile:{[filetype;filetoload;loadid;tempdb;optionalparams]
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
   .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
   syscmd["rm ",fifo];
-
     // result to send to postback function to orchestrator
   (!) . flip (
     (`tablepath;hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype));
@@ -92,7 +85,6 @@ loadtaqfile:{[filetype;filetoload;loadid;tempdb;optionalparams]
     (`tabledate;date);
     (`loadendtime;.z.P)
   )
-
  };
 
 // function for running system commands
@@ -102,5 +94,3 @@ syscmd:{
   if[not first r; 'last r];
   last r
  };
-
-

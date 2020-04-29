@@ -50,7 +50,7 @@ nbboparams:defaults,(!) . flip (
          (`date;.z.d)
         );
 
-// example use of fifo stremaing algorithm for trades table
+// function to load all taq files from nyse
 loadtaqfile:{[filetype;filetoload;loadid;tempdb;optionalparams]
   // define params based on filetype
   params:$[

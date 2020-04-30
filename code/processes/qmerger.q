@@ -5,11 +5,11 @@ mergedir:@[value;`mergedir;`:mergedir]
 
 /-reset temp hdb and update merged table
 reset:{
-  .lg.o[`quotemerger;"clearing temporary db"];
+  .lg.o[`quotemerger;"creating date partition ",string x[`tabledate]];
   `merged upsert ([date:26#x[`tabledate];split:`$'.Q.A]status:26#0b);
-  empty:select from (get x[`tablepath]) where ticktime<x[`tabledate];
+  empty:select from (get x[`tablepath]) where ticktime<x[`tabledate]; //replace with something not dependent on data 
   y set empty;
-  .lg.o[`quotemerger;"temporary db cleared"];
+  .lg.o[`quotemerger;"date partition created"];
  }
 
 /-base merge function
@@ -29,6 +29,8 @@ mergesplit:{
 
   /-extract split letter
   split:`$(reverse string x[`tablepath])[17];
+  
+  //syscmd["rm -r ",1_-17_string x[`tablepath]];
 
   /-check if date has entries in merged table
   c:count a:exec distinct date from merged;
@@ -67,7 +69,10 @@ movetohdb:{
   quotedir:`$"/" sv (string pardir;"quote";"");
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
   syscmd[" " sv ("mv"; 1_string[pardir];1_string[hdbdir])];
-  .lg.o[`quotemerger;"quote data moved to hdb"]
+  .lg.o[`quotemerger;"quote data moved to hdb"];
+  .lg.o[`quotemerger;"clearing ",string x, " from temporary database"];
+  syscmd["rm -r ",string pardir];
+  .lg.0[`quotemerger;"temporary db cleared"];
   }
 
 /-attempt to load merged table, create it if it doesnt exist

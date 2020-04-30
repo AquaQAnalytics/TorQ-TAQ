@@ -34,7 +34,7 @@ finishload:{[q;r]
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
     // if filetype is a quote invoke merger here
     if[r[`tabletype]=`quote;
-        fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.z.P];
+        fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.proc.cp[]];
         h:.servers.getserverbytype[`gateway;`w;`any];
         (neg h)(`.gw.asyncexecjpt;
             (`mergesplit;4#r);
@@ -43,7 +43,7 @@ finishload:{[q;r]
     };
 
 finishmerge:{[q;r]
-    fileloading[loadid]:@[fileloading[loadid];`mergeendtime;:;.z.P];
+    fileloading[loadid]:@[fileloading[loadid];`mergeendtime;:;.proc.cp[]];
   };
 
 // async message to invoke loader process when new nyse file is found

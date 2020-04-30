@@ -1,5 +1,6 @@
 hdbdir:@[value;`hdbdir;`:hdbdir]
 symdir:@[value;`symdir;`:symdir]
+tempdb:@[value;`tempdb;`:tempdb]
 optionalparams:@[value;`optionalparams;()!()] 
 timeconverter:{"n"$sum 3600000000000 60000000000 1000000000 1*deltas[d*x div/: d]div d:10000000000000 100000000000 1000000000 1}
 defaults:`chunksize`partitioncol`partitiontype`compression`gc!(`int$100*2 xexp 20;`ticktime;`date;();0b)
@@ -12,6 +13,7 @@ tradeparams:defaults,(!) . flip (
          (`separator;enlist"|");
          (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
          (`symdir;symdir);            // where we enumerate against
+         (`tempdb;tempdb);
          (`dataprocessfunc;{[params;data] `sym`ticktime`exch`cond`size`price`stop`corr`sequence`cts`trf xcols delete from
         (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data) where null ticktime});
          (`date;.z.d)
@@ -24,6 +26,7 @@ quoteparams:defaults,(!) . flip (
          (`separator;enlist"|");
          (`dbdir;hdbdir);               // this parameter is defined in the top level taqloader script
          (`symdir;symdir);              // where we enumerate against
+         (`tempdb;tempdb);
          (`dataprocessfunc;{[params;data]
           `sym`ticktime`exch`bid`bidsize`ask`asksize`cond`mmid`bidexch`askexch`sequence`bbo`qbbo`corr`cqs`rpi`shortsale`cqsind`utpind`parttime xcols
             update mmid:(count ticktime)#enlist "",bidexch:`,askexch:`,corr:" ",cqsind:" " from
@@ -40,6 +43,7 @@ nbboparams:defaults,(!) . flip (
          (`separator;enlist"|");
          (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
          (`symdir;symdir);            // where we enumerate against
+         (`tempdb;tempdb);
          (`dataprocessfunc;{[params;data] 
 	`sym`ticktime`exch`bid`bidsize`ask`asksize`cond`mmid`bidexch`askexch`sequence`bbo`qbbo`corr`cqs`qcond`bbex`bbprice`bbsize`bbmmid`bbmmloc`bbmmdeskloc`baex`baprice`basize`bammid`bammloc`bammdeskloc`luldind`nbboind`parttime xcols 
 	// add in blank fields which don't exist any more 
@@ -62,9 +66,9 @@ loadtaqfile:{[filetype;filetoload;loadid;tempdb;optionalparams]
     ];
   // if quote then partition by letter in the temp hdb
   params[`dbdir]:$[
-    filetype=`trade;`$(string params[`symdir]),"/",(string filetype);
-    filetype=`quote;`$(string params[`symdir]),"/",(string filetype),last -12_string filetoload;
-    `$(string params[`symdir]),"/",(string filetype);
+    filetype=`trade;`$(string params[`tempdb]),"/",(string filetype);
+    filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
+    `$(string params[`tempdb]),"/",(string filetype);
     ];
   // make fifo with PID attached
   fifo:"/tmp/fifo",string .z.i;

@@ -1,9 +1,9 @@
-hdbdir:hsym`$getenv[`KDBHDB]
-filetoload:`:/home/rsketch/EQY_US_ALL_TRADE_20180730.gz // for testing
-
+hdbdir:@[value;`hdbdir;`:hdbdir]
+symdir:@[value;`symdir;`:symdir]
+tempdb:@[value;`tempdb;`:tempdb]
+optionalparams:@[value;`optionalparams;()!()] 
 timeconverter:{"n"$sum 3600000000000 60000000000 1000000000 1*deltas[d*x div/: d]div d:10000000000000 100000000000 1000000000 1}
 defaults:`chunksize`partitioncol`partitiontype`compression`gc!(`int$100*2 xexp 20;`ticktime;`date;();0b)
-optionalparams:(enlist `hdbtemp) ! enlist `:/home/rsketch/testdb // for testing
 
 // set the schema for each table
 tradeparams:defaults,(!) . flip (
@@ -12,7 +12,8 @@ tradeparams:defaults,(!) . flip (
          (`tablename;`trade);
          (`separator;enlist"|");
          (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
-         (`symdir;hdbdir);            // where we enumerate against
+         (`symdir;symdir);            // where we enumerate against
+         (`tempdb;tempdb);
          (`dataprocessfunc;{[params;data] `sym`ticktime`exch`cond`size`price`stop`corr`sequence`cts`trf xcols delete from
         (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data) where null ticktime});
          (`date;.z.d)
@@ -24,7 +25,8 @@ quoteparams:defaults,(!) . flip (
          (`tablename;`quote);
          (`separator;enlist"|");
          (`dbdir;hdbdir);               // this parameter is defined in the top level taqloader script
-         (`symdir;hdbdir);              // where we enumerate against
+         (`symdir;symdir);              // where we enumerate against
+         (`tempdb;tempdb);
          (`dataprocessfunc;{[params;data]
           `sym`ticktime`exch`bid`bidsize`ask`asksize`cond`mmid`bidexch`askexch`sequence`bbo`qbbo`corr`cqs`rpi`shortsale`cqsind`utpind`parttime xcols
             update mmid:(count ticktime)#enlist "",bidexch:`,askexch:`,corr:" ",cqsind:" " from
@@ -40,7 +42,8 @@ nbboparams:defaults,(!) . flip (
          (`tablename;`nbbo);
          (`separator;enlist"|");
          (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
-         (`symdir;hdbdir);            // where we enumerate against
+         (`symdir;symdir);            // where we enumerate against
+         (`tempdb;tempdb);
          (`dataprocessfunc;{[params;data] 
 	`sym`ticktime`exch`bid`bidsize`ask`asksize`cond`mmid`bidexch`askexch`sequence`bbo`qbbo`corr`cqs`qcond`bbex`bbprice`bbsize`bbmmid`bbmmloc`bbmmdeskloc`baex`baprice`basize`bammid`bammloc`bammdeskloc`luldind`nbboind`parttime xcols 
 	// add in blank fields which don't exist any more 
@@ -51,12 +54,9 @@ nbboparams:defaults,(!) . flip (
          (`date;.z.d)
         );
 
-// example use of streaming algorithm
-loadfsn:{.Q.fsn[.loader.loaddata[quoteparams,(enlist`filename)!enlist filetoload];filetoload;quoteparams`chunksize]}
-
-// example use of fifo stremaing algorithm for trades table
+// function to load all taq files from nyse
 loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
-  
+  filepath:raze (getenv[`TORQTAQFILEDROP]),string filetoload;
   // define params based on filetype
   params:$[
     filetype=`trade;tradeparams,optionalparams;
@@ -64,14 +64,12 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
     filetype=`nbbo;nbboparams,optionalparams;
     [.lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"];'errmsg]
     ];
-
   // if quote then partition by letter in the temp hdb
   params[`dbdir]:$[
-    filetype=`trade;`$(string params[`hdbtemp]),"/",(string filetype);
-    filetype=`quote;`$(string params[`hdbtemp]),"/",(string filetype),last -12_string filetoload;
-    `$(string params[`hdbtemp]),"/",(string filetype);
+    filetype=`trade;`$(string params[`tempdb]),"/",(string filetype);
+    filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
+    `$(string params[`tempdb]),"/",(string filetype);
     ];
-
   // make fifo with PID attached
   fifo:"/tmp/fifo",string .z.i;
   // extract date
@@ -79,13 +77,12 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
   params[`date]:date;
   // remove fifo if it exists then make new one
   syscmd["rm -f ",fifo," && mkfifo ",fifo];
-  syscmd["gunzip -c ",(.os.pth[filetoload])," > ",fifo," &"];
+  syscmd["gunzip -c ",(filepath)," > ",fifo," &"];
   .lg.o[`fifoloader;"Loading ",(string filetoload)];
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
   .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
   syscmd["rm ",fifo];
-
-    // result to send to postback function to orchestrator
+  // result to send to postback function to orchestrator
   (!) . flip (
     (`tablepath;hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype));
     (`tabletype;filetype);
@@ -93,7 +90,6 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
     (`tabledate;date);
     (`loadendtime;.z.P)
   )
-
  };
 
 // function for running system commands
@@ -103,5 +99,3 @@ syscmd:{
   if[not first r; 'last r];
   last r
  };
-
-

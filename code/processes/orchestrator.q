@@ -1,5 +1,4 @@
 optionalparams:@[value;`optionalparams;()!()]
-tempdb:@[value;`tempdb;`:tempdb]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
 .proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]

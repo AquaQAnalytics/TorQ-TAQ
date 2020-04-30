@@ -33,22 +33,3 @@ export KDBAPPCODE=${TORQHOME}/code
 export KDBBASEPORT=1259
 # set TORQPROCESSES to the default process csv
 export TORQPROCESSES=${KDBAPPCONFIG}/process.csv
-# if using the email facility, modify the library path for the email lib depending on OS
-# e.g. linux:
-# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$KDBLIB/l[32|64]
-# e.g. osx:
-# export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$KDBLIB/m[32|64]
-
-# Please input the API token obtained from IEX here
-export IEX_PUBLIC_TOKEN=""
-
-TORQSSLCERT=${KDBLOG}/torqsslcert.txt
-touch ${TORQSSLCERT}
-if [ -z "${SSL_CA_CERT_FILE}" ]; then
-  mkdir -p ${TORQHOME}/certs
-  curl -s  https://curl.haxx.se/ca/cacert.pm > ${TORQHOME}/certs/cabundle.pem
-  echo "`date`    The SSL securiity certificate has been downloaded to ${TORQHOME}/certs/cabundle.pem" </dev/null >>$TORQSSLCERT
-  export SSL_CA_CERT_FILE=${TORQHOME}/certs/cabundle.pem
-else
-  echo "`date`    The SSL security certificate already exists. If https requests fail it may be because of inappropriate certification." </dev/null >>$TORQSSLCERT
-fi

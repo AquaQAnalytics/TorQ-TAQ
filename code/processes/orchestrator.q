@@ -48,6 +48,7 @@ finishmerge:{[q;r]
 // async message to invoke loader process when new nyse file is found
 // this will invoke a loader slave to run loadtaqfile function in taqloader
 runload:{[path;file]
+    filepath:hsym`$path,file;
     // define filetype based on name of incoming file from filealerter
     filetype: $[
     file like "*TRADE*";`trade;
@@ -61,6 +62,6 @@ runload:{[path;file]
     // async call to gw to invoke loader process to load file
     .lg.o[`runload;"Initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; 
-        (`loadtaqfile;filetype;`$file;loadid;tempdb;optionalparams);
+        (`loadtaqfile;filetype;`$file;loadid;optionalparams);
         `taqloader;{x};`finishload;0Wn);
     };

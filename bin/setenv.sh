@@ -21,6 +21,7 @@ export KDBWDB=${TORQHOME}/wdbhdb
 export KDBTPLOG=${TORQHOME}/tplogs
 export TORQTAQTEMPDB=${TORQHOME}/tempdb/
 export TORQTAQMERGED=${TORQHOME}/merged
+export TORQTAQFILEDROP=${TORQHOME}/filedrop/
 # set rlwrap and qcon paths for use in torq.sh qcon flag functions
 export RLWRAP="rlwrap"
 export QCON="qcon"

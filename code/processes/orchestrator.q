@@ -1,8 +1,7 @@
-optionalparams:@[value;`optionalparams;()!()];
+optionalparams:@[value;`optionalparams;()!()]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
 .proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
-h:.servers.getserverbytype[`gateway;`w;`any]
 
 // table to track progress of each file to load
 fileloading:(
@@ -34,7 +33,8 @@ finishload:{[q;r]
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
     // if filetype is a quote invoke merger here
     if[r[`tabletype]=`quote;
-        fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.z.P];
+        fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.proc.cp[]];
+        h:.servers.getserverbytype[`gateway;`w;`any];
         (neg h)(`.gw.asyncexecjpt;
             (`mergesplit;4#r);
             `qmerger;{x};`finishmerge;0Wn);
@@ -42,9 +42,7 @@ finishload:{[q;r]
     };
 
 finishmerge:{[q;r]
-    
-    // update merge monitoring data here after merge is complete
-
+    fileloading[loadid]:@[fileloading[loadid];`mergeendtime;:;.proc.cp[]];
   };
 
 // async message to invoke loader process when new nyse file is found
@@ -53,17 +51,17 @@ runload:{[path;file]
     filepath:hsym`$path,file;
     // define filetype based on name of incoming file from filealerter
     filetype: $[
-    ("TRADE" inter file)~"TRADE";`trade;
-    ("SPLITS" inter file)~"SPLITS";`quote;
-    ("NBBO" inter file)~"NBBO";`nbbo;
+    file like "*TRADE*";`trade;
+    file like "*SPLITS*";`quote;
+    file like "*NBBO*";`nbbo;
     [.lg.e[`fifoloader;errmsg:(string file)," is an unknown or unsupported file type"];'errmsg]];
-    
     // update monitoring table
     startload[filepath;filetype];  // defines loadid globally 
-
+    // open handle to gateway
+    h:.servers.getserverbytype[`gateway;`w;`any];
     // async call to gw to invoke loader process to load file
     .lg.o[`runload;"Initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; 
-        (`loadtaqfile;filetype;filepath;optionalparams);
+        (`loadtaqfile;filetype;`$file;loadid;optionalparams);
         `taqloader;{x};`finishload;0Wn);
     };

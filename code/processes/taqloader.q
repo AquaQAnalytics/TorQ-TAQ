@@ -55,7 +55,7 @@ nbboparams:defaults,(!) . flip (
         );
 
 // function to load all taq files from nyse
-loadtaqfile:{[filetype;filetoload;loadid;tempdb;optionalparams]
+loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
   filepath:raze (getenv[`TORQTAQFILEDROP]),string filetoload;
   // define params based on filetype
   params:$[

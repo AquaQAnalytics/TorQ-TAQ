@@ -23,8 +23,8 @@ merge:{
 /-quote merge function
 mergesplit:{
   
-  pardir:`$"/" sv (string tempdbdir;string x[`tabledate]);
-  quotedir:`$"/" sv (string pardir;"quote";"");
+  pardir:` sv tempdbdir,`$string x[`tabledate];
+  quotedir:` sv tempdbdir,`$string x[`tabledate];
 
   /-extract split letter
   split:`$(reverse string x[`tablepath])[17];

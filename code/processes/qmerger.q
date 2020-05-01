@@ -1,5 +1,4 @@
 hdbdir:@[value;`hdbdir;`:hdb]
-homedir:@[value;`homedir;`:home]
 tempdbdir:@[value;`tempdbdir;()!()]
 mergedir:@[value;`mergedir;`:mergedir]
 

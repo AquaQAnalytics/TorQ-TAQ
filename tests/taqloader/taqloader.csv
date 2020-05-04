@@ -1,0 +1,10 @@
+action,ms,bytes,lang,code,repeat,minver,comment
+before,0,,q,"filetype:`quote",1,0,define filetype
+before,0,,q,"filetoload:`SPLITS_US_ALL_BBO_A_20180103.gz",1,0,define filetoload
+before,0,,q,"filepath:`:/home/rsketch/taqfiles/SPLITS_US_ALL_BBO_A_20180103.gz",1,0,define filepath
+before,0,,q,"loadid:1",1,0,define loadid
+before,0,,q,"optionalparams:()!()",1,0,define optionalparams
+before,0,,q,"hdbdir:hsym`$getenv[`KDBHDB]",1,0,set hdb env
+before,0,,q,"symdir:hsym`$getenv[`KDBHDB]",1,0,set sym env
+before,0,,q,"tempdb:hsym`$getenv[`TORQTAQTEMPDB]",1,0,set tempdb env
+run,0,,q,"result:loadtaqfile[filetype;filetoload;filepath;loadid;optionalparams]",1,0, run loader function

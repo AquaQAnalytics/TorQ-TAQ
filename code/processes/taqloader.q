@@ -57,7 +57,9 @@ nbboparams:defaults,(!) . flip (
 // function to load all taq files from nyse
 loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
   foundfile:1b;
+  // initialize as fail and update to success if fully loaded
   loadstatus:`fail;
+  // hard code numbers in date assignment since file names are uniform
   date:@[{"D"$-8#-3_string x};filetoload;0Nd];
   if[0Nd=date;.lg.e[`loadtaqfile;("Could not extract date in "),string filetoload]];
   $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];

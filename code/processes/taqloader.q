@@ -65,29 +65,29 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
     foundfile:0b];
   if[not foundfile;.lg.e[`loadtaqfile;"Could not find ", .os.pth filepath]];  
   if[foundfile;
-  // define params based on filetype
-  params:$[
-    filetype=`trade;tradeparams,optionalparams;
-    filetype=`quote;quoteparams,optionalparams;
-    filetype=`nbbo;nbboparams,optionalparams;
-    [.lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"];'errmsg]
-    ];
-  // if quote then partition by letter in the temp hdb
-  params[`dbdir]:$[
-    filetype=`trade;`$(string params[`tempdb]),"/",(string filetype);
-    filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
-    `$(string params[`tempdb]),"/",(string filetype);
-    ];
-  // make fifo with PID attached
-  fifo:"/tmp/fifo",string .z.i;
-  params[`date]:date;
-  // remove fifo if it exists then make new one
-  syscmd["rm -f ",fifo," && mkfifo ",fifo];
-  syscmd["gunzip -c ",(filepath)," > ",fifo," &"];
-  .lg.o[`fifoloader;"Loading ",(string filetoload)];
-  .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
-  .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
-  syscmd["rm ",fifo];
+    // define params based on filetype
+    params:$[
+      filetype=`trade;tradeparams,optionalparams;
+      filetype=`quote;quoteparams,optionalparams;
+      filetype=`nbbo;nbboparams,optionalparams;
+      [.lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"];'errmsg]
+      ];
+    // if quote then partition by letter in the temp hdb
+    params[`dbdir]:$[
+      filetype=`trade;`$(string params[`tempdb]),"/",(string filetype);
+      filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
+      `$(string params[`tempdb]),"/",(string filetype);
+      ];
+    // make fifo with PID attached
+    fifo:"/tmp/fifo",string .z.i;
+    params[`date]:date;
+    // remove fifo if it exists then make new one
+    syscmd["rm -f ",fifo," && mkfifo ",fifo];
+    syscmd["gunzip -c ",(filepath)," > ",fifo," &"];
+    .lg.o[`fifoloader;"Loading ",(string filetoload)];
+    .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
+    .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
+    syscmd["rm ",fifo];
   ];
   // result to send to postback function to orchestrator
   (!) . flip (

@@ -29,7 +29,7 @@ mergesplit:{
   /-extract split letter
   split:`$(reverse string x[`tablepath])[17];
   
-  //syscmd["rm -r ",1_-17_string x[`tablepath]];
+  syscmd["rm -r ",1_-17_string x[`tablepath]];
 
   /-check if date has entries in merged table
   c:count a:exec distinct date from merged;
@@ -53,14 +53,6 @@ mergesplit:{
   returnkeys:`loadid`mergelocation`fullmergestatus;
   return:result,returnkeys!(x[`loadid];quotedir;b)
  }
-
-/-function to run and log system commands 
-syscmd:{
-  .lg.o[`system;"running system command ",x]; 
-  r:@[{(1b;system x)};x;{.lg.e[`system;"failed to run system command ",x];(0b;x)}];
-  if[not first r; 'last r];
-  last r
- };
 
 /-move merged quotes to date partition in hdb
 movetohdb:{

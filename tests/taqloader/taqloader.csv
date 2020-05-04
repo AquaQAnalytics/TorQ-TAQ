@@ -7,4 +7,5 @@ before,0,,q,"optionalparams:()!()",1,0,define optionalparams
 before,0,,q,"hdbdir:hsym`$getenv[`KDBHDB]",1,0,set hdb env
 before,0,,q,"symdir:hsym`$getenv[`KDBHDB]",1,0,set sym env
 before,0,,q,"tempdb:hsym`$getenv[`TORQTAQTEMPDB]",1,0,set tempdb env
-run,0,,q,"result:loadtaqfile[filetype;filetoload;filepath;loadid;optionalparams]",1,0, run loader function
+run,0,,q,"result:loadtaqfile[filetype;filetoload;filepath;loadid;optionalparams]",0,0, run loader function
+true,0,,q,"4#result,-1#result~`tablepath`tabletype`loadid`tabledate`loadstatus!(`:/home/rsketch/taqfiles/SPLITS_US_ALL_BBO_A_20180103.gz;`quote;1;2018.01.03;`success)",0,0,compare all results except loadendtime

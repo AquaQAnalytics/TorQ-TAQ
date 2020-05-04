@@ -26,7 +26,7 @@ mergesplit:{
   pardir:` sv tempdbdir,`final, `$string x[`tabledate];
   quotedir:` sv tempdbdir,`quote;
 
-  /-extract split letter
+  /-extract split letter, always 17 places from the end of the file symbol
   split:`$(reverse string x[`tablepath])[17];
   
   syscmd["rm -r ",1_-17_string x[`tablepath]];

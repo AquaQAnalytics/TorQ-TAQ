@@ -23,8 +23,8 @@ merge:{
 /-quote merge function
 mergesplit:{
   
-  pardir:` sv tempdbdir,`$string x[`tabledate];
-  quotedir:` sv tempdbdir,`$string x[`tabledate];
+  pardir:` sv tempdbdir,`final, `$string x[`tabledate];
+  quotedir:` sv tempdbdir,`quote;
 
   /-extract split letter
   split:`$(reverse string x[`tablepath])[17];
@@ -64,8 +64,8 @@ syscmd:{
 
 /-move merged quotes to date partition in hdb
 movetohdb:{
-  pardir:`$"/" sv (string tempdbdir;string x);
-  quotedir:`$"/" sv (string pardir;"quote";"");
+  pardir:` sv tempdbdir,`final, `$string x[`tabledate];
+  quotedir:` sv tempdbdir,`quote;
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
   syscmd[" " sv ("mv"; 1_string[pardir];1_string[hdbdir])];
   .lg.o[`quotemerger;"quote data moved to hdb"];

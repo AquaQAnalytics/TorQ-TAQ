@@ -95,7 +95,8 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
     (`tabletype;filetype);
     (`loadid;loadid);
     (`tabledate;date);
-    (`loadendtime;.proc.cp[])
+    (`loadendtime;.proc.cp[]);
+    (`loadstatus;loadstatus)
   )
  };
 

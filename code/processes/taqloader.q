@@ -56,7 +56,15 @@ nbboparams:defaults,(!) . flip (
 
 // function to load all taq files from nyse
 loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
-  filepath:raze (getenv[`TORQTAQFILEDROP]),string filetoload;
+  foundfile:1b;
+  loadstatus:`fail;
+  date:@[{"D"$-8#-3_string x};filetoload;0Nd];
+  if[0Nd=date;.lg.e[`loadtaqfile;("Could not extract date in "),string filetoload]];
+  $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
+    .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
+    foundfile:0b];
+  if[not foundfile;.lg.e[`loadtaqfile;"Could not find ", .os.pth filepath]];  
+  if[foundfile;
   // define params based on filetype
   params:$[
     filetype=`trade;tradeparams,optionalparams;
@@ -72,8 +80,6 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
     ];
   // make fifo with PID attached
   fifo:"/tmp/fifo",string .z.i;
-  // extract date
-  date:"D"$-8#-3_string filetoload;
   params[`date]:date;
   // remove fifo if it exists then make new one
   syscmd["rm -f ",fifo," && mkfifo ",fifo];
@@ -82,13 +88,14 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
   .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
   .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
   syscmd["rm ",fifo];
+  ];
   // result to send to postback function to orchestrator
   (!) . flip (
     (`tablepath;hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype));
     (`tabletype;filetype);
     (`loadid;loadid);
     (`tabledate;date);
-    (`loadendtime;.z.P)
+    (`loadendtime;.proc.cp[])
   )
  };
 

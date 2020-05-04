@@ -62,10 +62,6 @@ runload:{[path;file]
     // async call to gw to invoke loader process to load file
     .lg.o[`runload;"Initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; 
-<<<<<<< HEAD
-        (`loadtaqfile;filetype;filepath;loadid;optionalparams);
-=======
         (`loadtaqfile;filetype;`$file;loadid;optionalparams);
->>>>>>> master
         `taqloader;{x};`finishload;0Wn);
     };

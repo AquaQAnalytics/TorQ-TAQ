@@ -87,7 +87,8 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
     syscmd["rm -f ",fifo," && mkfifo ",fifo];
     syscmd["gunzip -c ",(filepath)," > ",fifo," &"];
     .lg.o[`fifoloader;"Loading ",(string filetoload)];
-    .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
+    .[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
+      [.lg.e[`loadtaqfile;errmsg:"Load failed on file ",string filetoload];'errmsg]];
     .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
     syscmd["rm ",fifo];
   ];

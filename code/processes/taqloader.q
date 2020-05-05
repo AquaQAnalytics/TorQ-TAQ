@@ -55,7 +55,7 @@ nbboparams:defaults,(!) . flip (
         );
 
 // function to load all taq files from nyse
-loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
+loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
   foundfile:1b;
   // initialize as fail and update to success if fully loaded
   loadstatus:`fail;
@@ -85,7 +85,7 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
     params[`date]:date;
     // remove fifo if it exists then make new one
     syscmd["rm -f ",fifo," && mkfifo ",fifo];
-    syscmd["gunzip -c ",(filepath)," > ",fifo," &"];
+    syscmd["gunzip -c ",(.os.pth filepath)," > ",fifo," &"];
     .lg.o[`fifoloader;"Loading ",(string filetoload)];
     .[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
       {[e] [.lg.e[`loadtaqfile;errmsg:"Failed to load file with error:",e];'errmsg]}];

@@ -61,7 +61,7 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
   loadstatus:`fail;
   // hard code numbers in date assignment since file names are uniform
   date:@[{"D"$-8#-3_string x};filetoload;0Nd];
-  if[0Nd=date;[.lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];'errmsg']];
+  if[0Nd=date;[.lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];'errmsg]];
   $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
     .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
     foundfile:0b];
@@ -88,7 +88,7 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
     syscmd["gunzip -c ",(filepath)," > ",fifo," &"];
     .lg.o[`fifoloader;"Loading ",(string filetoload)];
     .[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
-      [.lg.e[`loadtaqfile;errmsg:"Load failed on file ",string filetoload];'errmsg]];
+      {[e] [.lg.e[`loadtaqfile;errmsg:"Failed to load file with error:",e];'errmsg]}];
     .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
     syscmd["rm ",fifo];
     loadstatus:`success;

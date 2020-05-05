@@ -55,40 +55,52 @@ nbboparams:defaults,(!) . flip (
         );
 
 // function to load all taq files from nyse
-loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
-  filepath:raze (getenv[`TORQTAQFILEDROP]),string filetoload;
-  // define params based on filetype
-  params:$[
-    filetype=`trade;tradeparams,optionalparams;
-    filetype=`quote;quoteparams,optionalparams;
-    filetype=`nbbo;nbboparams,optionalparams;
-    [.lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"];'errmsg]
-    ];
-  // if quote then partition by letter in the temp hdb
-  params[`dbdir]:$[
-    filetype=`trade;`$(string params[`tempdb]),"/",(string filetype);
-    filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
-    `$(string params[`tempdb]),"/",(string filetype);
-    ];
-  // make fifo with PID attached
-  fifo:"/tmp/fifo",string .z.i;
-  // extract date
-  date:"D"$-8#-3_string filetoload;
-  params[`date]:date;
-  // remove fifo if it exists then make new one
-  syscmd["rm -f ",fifo," && mkfifo ",fifo];
-  syscmd["gunzip -c ",(filepath)," > ",fifo," &"];
-  .lg.o[`fifoloader;"Loading ",(string filetoload)];
-  .Q.fpn[.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize];
-  .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
-  syscmd["rm ",fifo];
+loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
+  foundfile:1b;
+  // initialize as fail and update to success if fully loaded
+  loadstatus:`fail;
+  // hard code numbers in date assignment since file names are uniform
+  date:@[{"D"$-8#-3_string x};filetoload;0Nd];
+  if[0Nd=date;[.lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];'errmsg]];
+  $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
+    .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
+    foundfile:0b];
+  if[not foundfile;[.lg.e[`loadtaqfile;errmsg:"Could not find ", .os.pth filepath];'errmsg]];  
+  if[foundfile;
+    // define params based on filetype
+    params:$[
+      filetype=`trade;tradeparams,optionalparams;
+      filetype=`quote;quoteparams,optionalparams;
+      filetype=`nbbo;nbboparams,optionalparams;
+      [.lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"];'errmsg]
+      ];
+    // if quote then partition by letter in the temp hdb
+    params[`dbdir]:$[
+      filetype=`trade;`$(string params[`tempdb]),"/",(string filetype);
+      filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
+      `$(string params[`tempdb]),"/",(string filetype);
+      ];
+    // make fifo with PID attached
+    fifo:"/tmp/fifo",string .z.i;
+    params[`date]:date;
+    // remove fifo if it exists then make new one
+    syscmd["rm -f ",fifo," && mkfifo ",fifo];
+    syscmd["gunzip -c ",(.os.pth filepath)," > ",fifo," &"];
+    .lg.o[`fifoloader;"Loading ",(string filetoload)];
+    .[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
+      {[e] [.lg.e[`loadtaqfile;errmsg:"Failed to load file with error:",e];'errmsg]}];
+    .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
+    syscmd["rm ",fifo];
+    loadstatus:`success;
+  ];
   // result to send to postback function to orchestrator
   (!) . flip (
     (`tablepath;hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype));
     (`tabletype;filetype);
     (`loadid;loadid);
     (`tabledate;date);
-    (`loadendtime;.z.P)
+    (`loadendtime;.proc.cp[]);
+    (`loadstatus;loadstatus)
   )
  };
 

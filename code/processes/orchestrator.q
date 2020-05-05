@@ -11,7 +11,8 @@ fileloading:(
     loadstarttime:`timestamp$();
     loadendtime:`timestamp$();
     mergestarttime:`timestamp$();
-    mergeendtime:`timestamp$()
+    mergeendtime:`timestamp$();
+    loadstatus:`symbol$()
     );
 
 // table of jobs in flight
@@ -30,7 +31,13 @@ startload:{
 
 // update record that file has been loaded
 finishload:{[q;r] 
+    if[10=type r;
+        fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;.proc.cp[]];
+        fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;`fail];
+        .lg.o[`finishload;r];
+      ];
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
+    fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;r[`loadstatus]];
     // if filetype is a quote invoke merger here
     if[r[`tabletype]=`quote;
         fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.proc.cp[]];
@@ -62,6 +69,6 @@ runload:{[path;file]
     // async call to gw to invoke loader process to load file
     .lg.o[`runload;"Initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; 
-        (`loadtaqfile;filetype;`$file;loadid;optionalparams);
+        (`loadtaqfile;filetype;`$file;filepath;loadid;optionalparams);
         `taqloader;{x};`finishload;0Wn);
     };

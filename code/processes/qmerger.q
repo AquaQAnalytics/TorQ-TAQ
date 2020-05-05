@@ -24,10 +24,10 @@ merge:{
 mergesplit:{
   
   pardir:` sv tempdbdir,`final, `$string x[`tabledate];
-  quotedir:` sv tempdbdir,`quote;
+  quotedir:` sv pardir,`quote,`;
 
-  /-extract split letter, always 17 places from the end of the file symbol
-  split:`$(reverse string x[`tablepath])[17];
+  /-extract split letter, path of form `:/path/to/quoteA/date/table 
+  split:`$first vs["/";reverse string x[`tablepath]][2];
 
   /-check if date has entries in merged table
   c:count a:exec distinct date from merged;
@@ -35,6 +35,9 @@ mergesplit:{
 
   /-attempt to merge and key result
   .lg.o[`quotemerger;"Attempting to merge split ",string split];
+
+  $[merged[(x[`tabledate];split)][`status];.lg.o[`quotemerger;"Unsuccessful: already merged"];];
+  
   a:$[merged[(x[`tabledate];split)][`status];
     (0b;"Unsuccessful: already merged";.z.P);
     @[{(merge x;"Success";.z.P)};
@@ -43,11 +46,11 @@ mergesplit:{
      ]
     ];
   result:`mergestatus`mergemessage`mergeendtime!a;
-  $[result[`mergemessage]="Unsuccessful: already merged";.lg.o[`quotemerger;"Unsuccessful: already merged"]];
+ 
   /-save merged table for use in orchestrator process
   save mergedir;
 
-  syscmd["rm -r ",1_-17_string x[`tablepath]];
+  syscmd["rm -r ",1_"/" sv -2_vs["/";string x[`tablepath]]];
 
   /-build return dictionary
   b:`=(merged?0b)[`split];
@@ -58,7 +61,6 @@ mergesplit:{
 /-move merged quotes to date partition in hdb
 movetohdb:{
   pardir:` sv tempdbdir,`final, `$string x[`tabledate];
-  quotedir:` sv tempdbdir,`quote;
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
   syscmd[" " sv ("mv"; 1_string[pardir];1_string[hdbdir])];
   .lg.o[`quotemerger;"quote data moved to hdb"];

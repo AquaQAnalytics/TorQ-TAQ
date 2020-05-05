@@ -61,11 +61,11 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
   loadstatus:`fail;
   // hard code numbers in date assignment since file names are uniform
   date:@[{"D"$-8#-3_string x};filetoload;0Nd];
-  if[0Nd=date;.lg.e[`loadtaqfile;("Could not extract date in "),string filetoload]];
+  if[0Nd=date;[.lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];'errmsg']];
   $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
     .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
     foundfile:0b];
-  if[not foundfile;.lg.e[`loadtaqfile;"Could not find ", .os.pth filepath]];  
+  if[not foundfile;[.lg.e[`loadtaqfile;errmsg:"Could not find ", .os.pth filepath];'errmsg]];  
   if[foundfile;
     // define params based on filetype
     params:$[

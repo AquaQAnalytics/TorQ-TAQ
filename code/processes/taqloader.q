@@ -91,6 +91,7 @@ loadtaqfile:{[filetype;filetoload;loadid;optionalparams]
       [.lg.e[`loadtaqfile;errmsg:"Load failed on file ",string filetoload];'errmsg]];
     .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
     syscmd["rm ",fifo];
+    loadstatus:`success;
   ];
   // result to send to postback function to orchestrator
   (!) . flip (

@@ -47,7 +47,6 @@ finishload:{[q;r]
             `qmerger;{x};`finishmerge;0Wn);
       ];
     };
-    };
 
 finishmerge:{[q;r]
     fileloading[loadid]:@[fileloading[loadid];`mergeendtime;:;.proc.cp[]];

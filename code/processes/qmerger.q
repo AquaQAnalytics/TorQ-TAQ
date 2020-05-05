@@ -14,7 +14,7 @@ reset:{
 /-base merge function
 merge:{
   .lg.o[`quotemerger;"Merging split ",string x[2]];
-  x[3] upsert get x[0];
+  x[3] upsert @[get;x[0];{[e] [.lg.e[`merge;errmsg:"Failed merge:",e];'splitnonexistant]}];
   .lg.o[`quotemerger;string[x[2]]," merged"];
   merged[(x[1];x[2])]:1b;
   return:1b

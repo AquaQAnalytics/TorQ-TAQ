@@ -11,7 +11,8 @@ fileloading:(
     loadstarttime:`timestamp$();
     loadendtime:`timestamp$();
     mergestarttime:`timestamp$();
-    mergeendtime:`timestamp$()
+    mergeendtime:`timestamp$();
+    loadstatus:`symbol$()
     );
 
 // table of jobs in flight
@@ -31,9 +32,9 @@ startload:{
 // update record that file has been loaded
 finishload:{[q;r] 
     if[10=type r;
-        .lg.o[`finishload;r];
         fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;.proc.cp[]];
-        fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;`fail];:()
+        fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;`fail];
+        .lg.o[`finishload;r];
       ];
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
     fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;r[`loadstatus]];

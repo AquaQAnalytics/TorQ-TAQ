@@ -30,7 +30,13 @@ startload:{
 
 // update record that file has been loaded
 finishload:{[q;r] 
+    if[10=type r;
+        .lg.o[`finishload;r];
+        fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;.proc.cp[]];
+        fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;`fail];:()
+      ];
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
+    fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;r[`loadstatus]];
     // if filetype is a quote invoke merger here
     if[r[`tabletype]=`quote;
         fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.proc.cp[]];
@@ -39,6 +45,7 @@ finishload:{[q;r]
             (`mergesplit;4#r);
             `qmerger;{x};`finishmerge;0Wn);
       ];
+    };
     };
 
 finishmerge:{[q;r]

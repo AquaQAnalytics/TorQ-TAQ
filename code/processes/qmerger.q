@@ -28,14 +28,13 @@ mergesplit:{
 
   /-extract split letter, always 17 places from the end of the file symbol
   split:`$(reverse string x[`tablepath])[17];
-  
-  syscmd["rm -r ",1_-17_string x[`tablepath]];
 
   /-check if date has entries in merged table
   c:count a:exec distinct date from merged;
   if[c=a?x[`tabledate];reset[x;quotedir]];
 
   /-attempt to merge and key result
+  .lg.o[`quotemerger;"Attempting to merge split ",string split];
   a:$[merged[(x[`tabledate];split)][`status];
     (0b;"Unsuccessful: already merged";.z.P);
     @[{(merge x;"Success";.z.P)};
@@ -44,9 +43,11 @@ mergesplit:{
      ]
     ];
   result:`mergestatus`mergemessage`mergeendtime!a;
-
+  $[result[`mergemessage]="Unsuccessful: already merged";.lg.o[`quotemerger;"Unsuccessful: already merged"]];
   /-save merged table for use in orchestrator process
   save mergedir;
+
+  syscmd["rm -r ",1_-17_string x[`tablepath]];
 
   /-build return dictionary
   b:`=(merged?0b)[`split];

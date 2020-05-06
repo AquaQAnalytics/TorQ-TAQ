@@ -36,8 +36,7 @@ finishload:{[q;r]
     if[10=type r;
         fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;.proc.cp[]];
         fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;0h];
-        .lg.o[`finishload;r];
-      ];
+        .lg.o[`finishload;r]];
     // updated monitoring stats
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
     fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;r[`loadstatus]];

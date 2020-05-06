@@ -12,7 +12,7 @@ fileloading:(
     loadendtime:`timestamp$();
     mergestarttime:`timestamp$();
     mergeendtime:`timestamp$();
-    loadstatus:`symbol$()
+    loadstatus:`short$()
     );
 
 // table of jobs in flight
@@ -63,7 +63,7 @@ runload:{[path;file]
     file like "*NBBO*";`nbbo;
     [.lg.e[`fifoloader;errmsg:(string file)," is an unknown or unsupported file type"];'errmsg]];
     // update monitoring table
-    startload[filepath;filetype];  // defines loadid globally 
+    startload[`$file;filetype];  // defines loadid globally 
     // open handle to gateway
     h:.servers.getserverbytype[`gateway;`w;`any];
     // async call to gw to invoke loader process to load file

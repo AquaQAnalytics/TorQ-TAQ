@@ -66,7 +66,7 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
   $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
     .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
     doload:0b];
-  if[not foundfile;.lg.e[`loadtaqfile;errmsg:"Could not find: ", .os.pth filepath]];  
+  if[not doload;.lg.e[`loadtaqfile;errmsg:"Could not find: ", .os.pth filepath]];  
   if[doload;
     // define params based on filetype
     params:$[

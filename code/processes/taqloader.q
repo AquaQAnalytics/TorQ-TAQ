@@ -73,7 +73,7 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
       filetype=`trade;tradeparams,optionalparams;
       filetype=`quote;quoteparams,optionalparams;
       filetype=`nbbo;nbboparams,optionalparams;
-      [.lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"];'errmsg]
+      .lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"]
       ];
     // if quote then partition by letter in the temp hdb
     params[`dbdir]:$[
@@ -88,11 +88,14 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
     syscmd["rm -f ",fifo," && mkfifo ",fifo];
     syscmd["gunzip -c ",(.os.pth filepath)," > ",fifo," &"];
     .lg.o[`fifoloader;"Loading ",(string filetoload)];
-    .[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
-      errmsg:{[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error:",e];msg}];
+    loadmsg:.[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
+      {[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error:",e];(0b;msg)}];
+    if[first loadmsg~0b;errmsg:loadmsg];
+    if[errmsg~""; 
     .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
     syscmd["rm ",fifo];
     loadstatus:1h;
+    ];
   ];
   // result to send to back to orchestrator
   (!) . flip (

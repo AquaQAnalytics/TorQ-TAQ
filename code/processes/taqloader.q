@@ -77,7 +77,7 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
       ];
     // if quote then partition by letter in the temp hdb
     params[`dbdir]:$[
-      filetype=`trade;`$(string params[`tempdb]),"/",(string filetype);
+      filetype=`trade;`$(string params[`tempdb]),"/final/",(string filetype);
       filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
       `$(string params[`tempdb]),"/",(string filetype);
       ];

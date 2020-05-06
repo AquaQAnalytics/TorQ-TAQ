@@ -34,7 +34,7 @@ finishload:{[q;r]
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
     fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;r[`loadstatus]];
     fileloading[loadid]:@[fileloading[loadid];`message;:;r[`message]];
-    // if filetype is a quote invoke merger here
+    // if filetype is a quote and load is successful then invoke merger here
     if([r[`tabletype]~`quote) and ""~r[`message];
         fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.proc.cp[]];
         h:.servers.getserverbytype[`gateway;`w;`any];

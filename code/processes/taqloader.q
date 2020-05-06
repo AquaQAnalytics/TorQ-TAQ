@@ -90,7 +90,6 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
     .lg.o[`fifoloader;"Loading ",(string filetoload)];
     loadmsg:.[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
       {[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error:",e];(0b;msg)}];
-      break;
     if[0b~first loadmsg;errmsg:last loadmsg];
     if[errmsg~""; 
       .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];

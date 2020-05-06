@@ -94,7 +94,7 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
     syscmd["rm ",fifo];
     loadstatus:1h;
   ];
-  // result to send to postback function to orchestrator
+  // result to send to back to orchestrator
   (!) . flip (
     (`tablepath;hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype));
     (`tabletype;filetype);

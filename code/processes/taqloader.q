@@ -92,9 +92,9 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
       {[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error:",e];(0b;msg)}];
     if[first loadmsg~0b;errmsg:loadmsg];
     if[errmsg~""; 
-    .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
-    syscmd["rm ",fifo];
-    loadstatus:1h;
+      .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
+      syscmd["rm ",fifo];
+      loadstatus:1h;
     ];
   ];
   // result to send to back to orchestrator

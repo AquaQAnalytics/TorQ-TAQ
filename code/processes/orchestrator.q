@@ -12,7 +12,8 @@ fileloading:(
     loadendtime:`timestamp$();
     mergestarttime:`timestamp$();
     mergeendtime:`timestamp$();
-    loadstatus:`short$()
+    loadstatus:`short$();
+    message:())
     );
 
 // table of jobs in flight
@@ -30,14 +31,17 @@ startload:{
     }; 
 
 // update record that file has been loaded
-finishload:{[q;r] 
+finishload:{[q;r]
+    // if taqloader isn't available, error is returned and r is a string 
     if[10=type r;
         fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;.proc.cp[]];
-        fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;`fail];
+        fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;0h];
         .lg.o[`finishload;r];
       ];
+    // updated monitoring stats
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
     fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;r[`loadstatus]];
+    fileloading[loadid]:@[fileloading[loadid];`message;:;r[`message]];
     // if filetype is a quote invoke merger here
     if[r[`tabletype]=`quote;
         fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.proc.cp[]];

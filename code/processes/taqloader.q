@@ -56,17 +56,18 @@ nbboparams:defaults,(!) . flip (
 
 // function to load all taq files from nyse
 loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
-  foundfile:1b;
+  doload:1b;
   // initialize as fail and update to success if fully loaded
-  loadstatus:`fail;
+  loadstatus:0h;
   // hard code numbers in date assignment since file names are uniform
+  errmsg:"";
   date:@[{"D"$-8#-3_string x};filetoload;0Nd];
-  if[0Nd=date;[.lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];'errmsg]];
+  if[0Nd=date;.lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload]];
   $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
     .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
-    foundfile:0b];
-  if[not foundfile;[.lg.e[`loadtaqfile;errmsg:"Could not find ", .os.pth filepath];'errmsg]];  
-  if[foundfile;
+    doload:0b];
+  if[not foundfile;.lg.e[`loadtaqfile;errmsg:"Could not find: ", .os.pth filepath]];  
+  if[doload;
     // define params based on filetype
     params:$[
       filetype=`trade;tradeparams,optionalparams;
@@ -88,10 +89,10 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
     syscmd["gunzip -c ",(.os.pth filepath)," > ",fifo," &"];
     .lg.o[`fifoloader;"Loading ",(string filetoload)];
     .[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
-      {[e] [.lg.e[`loadtaqfile;errmsg:"Failed to load file with error:",e];'errmsg]}];
+      errmsg:{[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error:",e];msg}];
     .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
     syscmd["rm ",fifo];
-    loadstatus:`success;
+    loadstatus:1h;
   ];
   // result to send to postback function to orchestrator
   (!) . flip (
@@ -100,6 +101,7 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
     (`loadid;loadid);
     (`tabledate;date);
     (`loadendtime;.proc.cp[]);
-    (`loadstatus;loadstatus)
+    (`loadstatus;loadstatus);
+    (`message;errmsg)
   )
  };

@@ -79,7 +79,7 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
     params[`dbdir]:$[
       filetype=`trade;`$(string params[`tempdb]),"/final/";
       filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
-      `$(string params[`tempdb]),"/";
+      `$(string params[`tempdb]),"/final/";
       ];
     // make fifo with PID attached
     fifo:"/tmp/fifo",string .z.i;

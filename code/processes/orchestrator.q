@@ -13,7 +13,7 @@ fileloading:(
     mergestarttime:`timestamp$();
     mergeendtime:`timestamp$();
     loadstatus:`short$();
-    message:())
+    message:()
     );
 
 // updates fileloading table upon initiation of loader for each file

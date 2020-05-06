@@ -16,13 +16,6 @@ fileloading:(
     message:())
     );
 
-// table of jobs in flight
-filestatus:(
-    []time:`timestamp$();
-    id:`symbol$();                   // id is filename
-    status:`symbol$()                // status is one of `waiting`loading`complete`error
-    ) 
-
 // updates fileloading table upon initiation of loader for each file
 startload:{
     loadid+:1; 

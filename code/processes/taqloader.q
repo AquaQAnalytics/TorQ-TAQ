@@ -56,55 +56,50 @@ nbboparams:defaults,(!) . flip (
 
 // function to load all taq files from nyse
 loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
-  doload:1b;
-  // initialize as fail and update to success if fully loaded
-  loadstatus:0h;
-  // hard code numbers in date assignment since file names are uniform
-  errmsg:"";
-  date:@[{"D"$-8#-3_string x};filetoload;0Nd];
-  if[0Nd=date;.lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload]];
-  $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
-    .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
-    doload:0b];
-  if[not doload;.lg.e[`loadtaqfile;errmsg:"Could not find: ", .os.pth filepath]];  
-  if[doload;
-    // define params based on filetype
-    params:$[
-      filetype=`trade;tradeparams,optionalparams;
-      filetype=`quote;quoteparams,optionalparams;
-      filetype=`nbbo;nbboparams,optionalparams;
-      .lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"]
+    doload:1b;
+    errmsg:"";
+    returndict:(!) . flip (
+        (`tablepath;`);
+        (`tabletype;filetype);
+        (`loadid;loadid);
+        (`tabledate;date:@[{"D"$-8#-3_string x};filetoload;0Nd]));
+    if[0Nd~date;
+        .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];
+        :buildreturndict[returndict;0h;errmsg]];
+    $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
+        .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
+        doload:0b];
+    if[not doload;.lg.e[`loadtaqfile;
+        errmsg:"Could not find: ", .os.pth filepath];
+        :buildreturndict[returndict;0h;errmsg]];  
+    if[doload;
+        // define params based on filetype
+        params:$[
+            filetype=`trade;tradeparams,optionalparams;
+            filetype=`quote;quoteparams,optionalparams;
+            filetype=`nbbo;nbboparams,optionalparams;
+            [.lg.e[`fifoloader;errmsg:(string filetype)," is an unknown or unsupported file type"];
+            :buildreturndict[returndict;0h;errmsg]]];
+        // if quote then partition by letter in the temp hdb
+        params[`dbdir]:$[
+            filetype=`trade;`$(string params[`tempdb]),"/final/";
+            filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
+            `$(string params[`tempdb]),"/final/"];
+        // make fifo with PID attached
+        fifo:"/tmp/fifo",string .z.i;
+        params[`date]:date;
+        // remove fifo if it exists then make new one
+        syscmd["rm -f ",fifo," && mkfifo ",fifo];
+        syscmd["gunzip -c ",(.os.pth filepath)," > ",fifo," &"];
+        .lg.o[`fifoloader;"Loading ",(string filetoload)];
+        loadmsg:.[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
+            {[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error:",e];(0b;msg)}];
+        if[0b~first loadmsg;:buildreturndict[returndict;0h;last loadmsg]];
+        .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
+        syscmd["rm ",fifo];
+        returndict[`tablepath]:hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype);
+        buildreturndict[returndict;1h;errmsg]
       ];
-    // if quote then partition by letter in the temp hdb
-    params[`dbdir]:$[
-      filetype=`trade;`$(string params[`tempdb]),"/final/";
-      filetype=`quote;`$(string params[`tempdb]),"/",(string filetype),last -12_string filetoload;
-      `$(string params[`tempdb]),"/final/";
-      ];
-    // make fifo with PID attached
-    fifo:"/tmp/fifo",string .z.i;
-    params[`date]:date;
-    // remove fifo if it exists then make new one
-    syscmd["rm -f ",fifo," && mkfifo ",fifo];
-    syscmd["gunzip -c ",(.os.pth filepath)," > ",fifo," &"];
-    .lg.o[`fifoloader;"Loading ",(string filetoload)];
-    loadmsg:.[{.Q.fpn[x;y;z]};(.loader.loaddata[params,(enlist`filename)!enlist `$-3_string filetoload];hsym `$fifo;params`chunksize);
-      {[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error:",e];(0b;msg)}];
-    if[0b~first loadmsg;errmsg:last loadmsg];
-    if[errmsg~""; 
-      .lg.o[`fifoloader;(string filetoload)," has successfully been loaded"];
-      syscmd["rm ",fifo];
-      loadstatus:1h;
-    ];
-  ];
-  // result to send to back to orchestrator
-  (!) . flip (
-    (`tablepath;hsym`$(string params[`dbdir]),"/",(string date),"/",(string filetype));
-    (`tabletype;filetype);
-    (`loadid;loadid);
-    (`tabledate;date);
-    (`loadendtime;.proc.cp[]);
-    (`loadstatus;loadstatus);
-    (`message;errmsg)
-  )
  };
+
+ buildreturndict:{[d;s;e] d,`loadendtime`loadstatus`message!(.proc.cp[];s;e)};

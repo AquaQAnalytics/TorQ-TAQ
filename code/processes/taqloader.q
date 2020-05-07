@@ -70,7 +70,7 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
         .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
         doload:0b];
     if[not doload;.lg.e[`loadtaqfile;
-        errmsg:"Could not find: ", .os.pth filepath];
+        errmsg:"Could not find: ",.os.pth filepath];
         :buildreturndict[returndict;0h;errmsg]];  
     if[doload;
         // define params based on filetype
@@ -102,4 +102,4 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
       ];
  };
 
- buildreturndict:{[d;s;e] d,`loadendtime`loadstatus`message!(.proc.cp[];s;e)};
+buildreturndict:{[d;s;e] d,`loadendtime`loadstatus`message!(.proc.cp[];s;e)};

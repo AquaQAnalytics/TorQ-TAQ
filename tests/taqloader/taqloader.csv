@@ -8,13 +8,13 @@ before,0,,q,"filetypen:`nbbo",1,0,define nbbo filetype
 before,0,,q,"optionalparams:()!()",1,0,define optionalparams
 before,0,,q,"filetoloadq1:`SPLITS_US_ALL_BBO_A_20180103.gz",1,0,define filetoload for quote
 before,0,,q,"filepathq1:`:/home/rsketch/taqfiles/SPLITS_US_ALL_BBO_A_20180103.gz",1,0,define correct filepath
-before,0,,q,"loadidq1:2",1,0,define loadid
+before,0,,q,"loadidq1:1",1,0,define loadid
 before,0,,q,"filetoloadq2:`SPLITS_US_ALL_BBO_X_20180103.gz",1,0,define filetoload for quote that does not exist
 before,0,,q,"filepathq2:`:/home/rsketch/taqfiles/SPLITS_US_ALL_BBO_X_20180103.gz",1,0,define filepath for quote that does not exist
 before,0,,q,"loadidq2:2",1,0,define loadid
 before,0,,q,"filetoloadq3:`SPLITS_US_ALL_BBO_A_2018010A.gz",1,0,define filetoload for quote with an incorrect date
 before,0,,q,"filepathq3:`:/home/rsketch/taqfiles/SPLITS_US_ALL_BBO_A_2018010A.gz",1,0,define filepath for quote with an incorrect date
-before,0,,q,"loadidq3:2",1,0,define loadid
+before,0,,q,"loadidq3:3",1,0,define loadid
 run,0,,q,"result1:loadtaqfile[filetypeq;filetoloadq1;filepathq1;loadidq1;optionalparams]",0,0, run loader function for correct file
 run,0,,q,"result2:loadtaqfile[filetypeq;filetoloadq2;filepathq2;loadidq2;optionalparams]",0,0, run loader function for file that does not exist
 run,0,,q,"result3:loadtaqfile[filetypeq;filetoloadq3;filepathq3;loadidq3;optionalparams]",0,0, run loader function for file with incorrect date

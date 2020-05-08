@@ -66,10 +66,10 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
         .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];
         :buildreturndict[returndict;0h;errmsg]];
     $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
-        .lg.o[`loadtaqfile;raze "File successfully found in ", getenv[`TORQTAQFILEDROP]];
+        .lg.o[`loadtaqfile;raze "File successfully found in ",getenv[`TORQTAQFILEDROP]];
         doload:0b];
     if[not doload;.lg.e[`loadtaqfile;
-        errmsg:"Could not find: ", .os.pth filepath];
+        errmsg:"Could not find: ",.os.pth filepath];
         :buildreturndict[returndict;0h;errmsg]];  
     if[doload;
         params:buildparams[filetype;returndict;filetoload];
@@ -86,14 +86,14 @@ buildreturndict:{[d;s;e]
 
 buildparams:{[ft;rd;ftl]
     p:$[
-        ft=`trade;tradeparams,optionalparams;
-        ft=`quote;quoteparams,optionalparams;
-        ft=`nbbo;nbboparams,optionalparams;
+        ft~`trade;tradeparams,optionalparams;
+        ft~`quote;quoteparams,optionalparams;
+        ft~`nbbo;nbboparams,optionalparams;
         [.lg.e[`fifoloader;errmsg:(string ft)," is an unknown or unsupported file type"];
         :buildreturndict[rd;0h;errmsg]]];
     p[`dbdir]:$[
-        ft=`trade;`$(string p[`tempdb]),"/final/";
-        ft=`quote;`$(string p[`tempdb]),"/",(string ft),last -12_string ftl;
+        ft~`trade;`$(string p[`tempdb]),"/final/";
+        ft~`quote;`$(string p[`tempdb]),"/",(string ft),last -12_string ftl;
         `$(string params[`tempdb]),"/final/"];p
   };
 

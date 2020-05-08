@@ -55,22 +55,28 @@ nbboparams:defaults,(!) . flip (
 
 // function to load all taq files from nyse
 loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
+    // boolean to determine if load function should be executed or not
     doload:1b;
+    // empty error message if the load is successful, otherwise error message will be printed to monitoring table as a string
     errmsg:"";
+    // initial definition of the dictionary to return upon completion or exit
     returndict:(!) . flip (
         (`tablepath;`);
         (`tabletype;filetype);
         (`loadid;loadid);
         (`tabledate;@[{"D"$-8#-3_string x};filetoload;0Nd]));
+    // Check if date was successfully extracted, if not exit with error
     if[0Nd~returndict`tabledate;
         .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];
         :buildreturndict[returndict;0h;errmsg]];
+    // Check if file exists in filedrop directory, otherwise exit with error
     $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
         .lg.o[`loadtaqfile;raze "File successfully found in ",getenv[`TORQTAQFILEDROP]];
         doload:0b];
     if[not doload;.lg.e[`loadtaqfile;
         errmsg:"Could not find: ",.os.pth filepath];
-        :buildreturndict[returndict;0h;errmsg]];  
+        :buildreturndict[returndict;0h;errmsg]];
+    // if file name is correct and exists in filedrop directory, execute the load  
     if[doload;
         params:buildparams[filetype;returndict;filetoload];
         :executeload[params;filepath;filetoload;returndict;filetype;errmsg]];
@@ -80,10 +86,12 @@ timeconverter:{
     "n"$sum 3600000000000 60000000000 1000000000 1*deltas[d*x div/: d]div d:10000000000000 100000000000 1000000000 1
   };
 
+// function for constructing return dictionary in loadtaqfile
 buildreturndict:{[d;s;e] 
     d,`loadendtime`loadstatus`message!(.proc.cp[];s;e)
   };
 
+// function for building parameters used in loadtaqfile based on file type
 buildparams:{[ft;rd;ftl]
     p:$[
         ft~`trade;tradeparams,optionalparams;
@@ -97,6 +105,7 @@ buildparams:{[ft;rd;ftl]
         `$(string params[`tempdb]),"/final/"];p
   };
 
+// function to execute the load of the taq file in loadtaqfile
 executeload:{[p;fp;ftl;d;ft;em]
     fifo:"/tmp/fifo",string .z.i;
     p[`date]:d`tabledate;
@@ -104,11 +113,13 @@ executeload:{[p;fp;ftl;d;ft;em]
     syscmd["rm -f ",fifo," && mkfifo ",fifo];
     syscmd["gunzip -c ",(.os.pth fp)," > ",fifo," &"];
     .lg.o[`fifoloader;"Loading ",(string ftl)];
+    // execute load, trap error if load is unsuccessful and assign the error message for monitoring table
     loadmsg:.[{.Q.fpn[x;y;z]};(.loader.loaddata[p,(enlist`filename)!enlist `$-3_string ftl];hsym `$fifo;p`chunksize);
         {[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error:",e];(0b;msg)}];
     if[0b~first loadmsg;:buildreturndict[d;0h;last loadmsg]];
     .lg.o[`fifoloader;(string ftl)," has successfully been loaded"];
     syscmd["rm ",fifo];
+    // assign value to table path only if table is successfully loaded here
     d[`tablepath]:hsym`$(string p[`dbdir]),"/",(string d`tabledate),"/",(string ft);
     buildreturndict[d;1h;em]
   };

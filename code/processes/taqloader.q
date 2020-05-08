@@ -110,5 +110,5 @@ executeload:{[p;fp;ftl;d;ft;em]
     .lg.o[`fifoloader;(string ftl)," has successfully been loaded"];
     syscmd["rm ",fifo];
     d[`tablepath]:hsym`$(string p[`dbdir]),"/",(string d`tabledate),"/",(string ft);
-    rd:buildreturndict[d;1h;em];rd
+    buildreturndict[d;1h;em]
   };

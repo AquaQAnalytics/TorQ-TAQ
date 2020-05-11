@@ -2,22 +2,27 @@ action,ms,bytes,lang,code,repeat,minver,comment
 before,0,,q,"hdbdir:hsym`$getenv[`KDBHDB]",1,0,set hdb env
 before,0,,q,"symdir:hsym`$getenv[`KDBHDB]",1,0,set sym env
 before,0,,q,"tempdb:hsym`$getenv[`TORQTAQTEMPDB]",1,0,set tempdb env
+before,0,,q,"filedrop:hsym`$getenv[`KDBTESTS],"/taqfiles/"",1,0,set tempdb env
 before,0,,q,"filetypeq:`quote",1,0,define quote filetype
 before,0,,q,"filetypet:`trade",1,0,define trade filetype
 before,0,,q,"filetypen:`nbbo",1,0,define nbbo filetype
 before,0,,q,"optionalparams:()!()",1,0,define optionalparams
 before,0,,q,"filetoloadq1:`SPLITS_US_ALL_BBO_A_20180103.gz",1,0,define filetoload for quote
-before,0,,q,"filepathq1:`:/home/rsketch/taqfiles/SPLITS_US_ALL_BBO_A_20180103.gz",1,0,define correct filepath
+before,0,,q,"filepathq1:hsym`$getenv[`KDBTESTS],"/taqfiles/SPLITS_US_ALL_BBO_A_20180103.gz"",1,0,define correct filepath
 before,0,,q,"loadidq1:1",1,0,define loadid
 before,0,,q,"filetoloadq2:`SPLITS_US_ALL_BBO_X_20180103.gz",1,0,define filetoload for quote that does not exist
-before,0,,q,"filepathq2:`:/home/rsketch/taqfiles/SPLITS_US_ALL_BBO_X_20180103.gz",1,0,define filepath for quote that does not exist
+before,0,,q,"filepathq2:hsym`$getenv[`KDBTESTS],"/taqfiles/SPLITS_US_ALL_BBO_X_20180103.gz"",1,0,define filepath for quote that does not exist
 before,0,,q,"loadidq2:2",1,0,define loadid
 before,0,,q,"filetoloadq3:`SPLITS_US_ALL_BBO_A_2018010A.gz",1,0,define filetoload for quote with an incorrect date
-before,0,,q,"filepathq3:`:/home/rsketch/taqfiles/SPLITS_US_ALL_BBO_A_2018010A.gz",1,0,define filepath for quote with an incorrect date
+before,0,,q,"filepathq3:hsym`$getenv[`KDBTESTS],"/taqfiles/SPLITS_US_ALL_BBO_A_2018010A.gz"",1,0,define filepath for quote with an incorrect date
 before,0,,q,"loadidq3:3",1,0,define loadid
+before,0,,q,"a:"Could not find: "",1,0,define a
+before,0,,q,"b:a,.os.pth filepathq2",1,0,define b to complete path
+before,0,,q,"c:`$"quoteA/2018.01.03/quote"",1,0,define c as quote partition
+before,0,,q,"d:"Could not extract date in "",1,0,define d to complete path
 run,0,,q,"result1:loadtaqfile[filetypeq;filetoloadq1;filepathq1;loadidq1;optionalparams]",0,0, run loader function for correct file
 run,0,,q,"result2:loadtaqfile[filetypeq;filetoloadq2;filepathq2;loadidq2;optionalparams]",0,0, run loader function for file that does not exist
 run,0,,q,"result3:loadtaqfile[filetypeq;filetoloadq3;filepathq3;loadidq3;optionalparams]",0,0, run loader function for file with incorrect date
-true,0,,q,"(result1 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(`:/home/rsketch/TAQ/taq/tempdb/quoteA/2018.01.03/quote;`quote;1;2018.01.03;1h;"")",0,0,compare all results except loadendtime
-true,0,,q,"(result2 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(`;`quote;2;2018.01.03;0h;"Could not find: /home/rsketch/taqfiles/SPLITS_US_ALL_BBO_X_20180103.gz")",0,0,compare all results except loadendtime
-true,0,,q,"(result3 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(`;`quote;3;0Nd;0h;"Could not extract date in SPLITS_US_ALL_BBO_A_2018010A.gz")",0,0,compare all results except loadendtime
+true,0,,q,"(result1 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(.Q.dd[tempdb;c];`quote;1;2018.01.03;1h;"")",0,0,compare all results except loadendtime
+true,0,,q,"(result2 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(`;`quote;2;2018.01.03;0h;b)",0,0,compare all results except loadendtime
+true,0,,q,"(result3 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(`;`quote;3;0Nd;0h;d,string filetoloadq3)",0,0,compare all results except loadendtime

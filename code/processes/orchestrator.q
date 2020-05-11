@@ -12,15 +12,9 @@ fileloading:(
     loadendtime:`timestamp$();
     mergestarttime:`timestamp$();
     mergeendtime:`timestamp$();
-    loadstatus:`symbol$()
+    loadstatus:`short$();
+    message:()
     );
-
-// table of jobs in flight
-filestatus:(
-    []time:`timestamp$();
-    id:`symbol$();                   // id is filename
-    status:`symbol$()                // status is one of `waiting`loading`complete`error
-    ) 
 
 // updates fileloading table upon initiation of loader for each file
 startload:{
@@ -30,16 +24,18 @@ startload:{
     }; 
 
 // update record that file has been loaded
-finishload:{[q;r] 
+finishload:{[q;r]
+    // if taqloader isn't available, error is returned and r is a string 
     if[10=type r;
         fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;.proc.cp[]];
-        fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;`fail];
-        .lg.o[`finishload;r];
-      ];
+        fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;0h];
+        .lg.o[`finishload;r]];
+    // updated monitoring stats
     fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
     fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;r[`loadstatus]];
-    // if filetype is a quote invoke merger here
-    if[r[`tabletype]=`quote;
+    fileloading[loadid]:@[fileloading[loadid];`message;:;r[`message]];
+    // if filetype is a quote and load is successful then invoke merger here
+    if([r[`tabletype]~`quote) and ""~r[`message];
         fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.proc.cp[]];
         h:.servers.getserverbytype[`gateway;`w;`any];
         (neg h)(`.gw.asyncexecjpt;
@@ -63,7 +59,7 @@ runload:{[path;file]
     file like "*NBBO*";`nbbo;
     [.lg.e[`fifoloader;errmsg:(string file)," is an unknown or unsupported file type"];'errmsg]];
     // update monitoring table
-    startload[filepath;filetype];  // defines loadid globally 
+    startload[`$file;filetype];  // defines loadid globally 
     // open handle to gateway
     h:.servers.getserverbytype[`gateway;`w;`any];
     // async call to gw to invoke loader process to load file

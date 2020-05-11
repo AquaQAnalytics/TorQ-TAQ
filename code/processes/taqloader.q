@@ -1,6 +1,7 @@
 hdbdir:@[value;`hdbdir;`:hdbdir]
 symdir:@[value;`symdir;`:symdir]
 tempdb:@[value;`tempdb;`:tempdb]
+filedrop:@[value;`filedrop;`:filedrop]
 optionalparams:@[value;`optionalparams;()!()]
 defaults:`chunksize`partitioncol`partitiontype`compression`gc!(`int$100*2 xexp 20;`ticktime;`date;();0b)
 
@@ -70,7 +71,7 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
         .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];
         :buildreturndict[returndict;0h;errmsg]];
     // Check if file exists in filedrop directory, otherwise exit with error
-    $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
+    $[filetoload in key[filedrop];
         .lg.o[`loadtaqfile;raze "File successfully found in ",getenv[`TORQTAQFILEDROP]];
         doload:0b];
     if[not doload;.lg.e[`loadtaqfile;

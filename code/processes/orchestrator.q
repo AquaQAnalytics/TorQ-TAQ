@@ -1,4 +1,5 @@
 optionalparams:@[value;`optionalparams;()!()]
+forceload:@[value;`forceload;0b]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
 .proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
@@ -49,9 +50,11 @@ finishmerge:{[q;r]
 // this will invoke a loader slave to run loadtaqfile function in taqloader
 runload:{[path;file]
     // check if file has already been loaded
+    // if forceload is on, load regardless
     if[1h in exec loadstatus from fileloading where filename=`$file;
         .lg.o[`runload;"The following file has already been successfully loaded: ", file];
-        .lg.o[`runload;"Exiting load function"];:()];
+        $[forceload;.lg.o[`runload;"Forcing reload on ",file,"despite already being successfully loaded"];
+        (.lg.o[`runload;"Exiting load function"];:())]];
     filepath:hsym`$path,file;
     // define filetype based on name of incoming file from filealerter
     filetype: $[

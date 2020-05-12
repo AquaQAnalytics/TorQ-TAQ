@@ -36,7 +36,7 @@ are outlined in the processes section of the TorQ documentation.
 The orchestrator is responsible for checking when the TAQ data arrives, initiating
 loads upon the data's arrival, ensuring data is merged, and moving data to the
 proper HDB when all loads are complete.  In addition, the orchestrator is 
-responsible for keeping up with various monitoring statistics.  These statistics
+in charge of keeping up with various monitoring statistics.  These statistics
 include load start times and end times, and indicator if the load was successful,
 and error logging for if a process fails.
 

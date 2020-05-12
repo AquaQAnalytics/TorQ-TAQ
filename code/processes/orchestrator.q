@@ -51,7 +51,7 @@ runload:{[path;file]
     // check if file has already been loaded
     if[1h in exec loadstatus from fileloading where filename=`$file;
         .lg.o[`runload;"The following file has already been successfully loaded: ", file];
-        .lg.o[`runload;"Exiting load function"]:();];
+        .lg.o[`runload;"Exiting load function"];:()];
     filepath:hsym`$path,file;
     // define filetype based on name of incoming file from filealerter
     filetype: $[

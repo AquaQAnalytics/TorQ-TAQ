@@ -1,7 +1,7 @@
 optionalparams:@[value;`optionalparams;()!()]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
-.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
+//.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
 
 // table to track progress of each file to load
 fileloading:(
@@ -25,17 +25,16 @@ startload:{
 
 // update record that file has been loaded
 finishload:{[q;r]
-    // if taqloader isn't available, error is returned and r is a string 
+    // 1h in exec loadstatus from fileloading where filename=`SPLITS_US_ALL_BBO_A_20180103.gz
+    robr2::r;
+    // if taqloader isn't available, error is returned and r is a string with connection error 
     if[10=type r;
-        fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;.proc.cp[]];
-        fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;0h];
-        .lg.o[`finishload;r]];
+        fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`message;:;(.proc.cp[];0h;r)];
+        .lg.o[`finishload;r];:()];
     // updated monitoring stats
-    fileloading[loadid]:@[fileloading[loadid];`loadendtime;:;r[`loadendtime]];
-    fileloading[loadid]:@[fileloading[loadid];`loadstatus;:;r[`loadstatus]];
-    fileloading[loadid]:@[fileloading[loadid];`message;:;r[`message]];
-    // if filetype is a quote and load is successful then invoke merger here
-    if([r[`tabletype]~`quote) and ""~r[`message];
+    fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`message;:;(r[`loadendtime];r[`loadstatus];r[`message])];
+    // if filetype is a quote invoke merger here
+    if[(r[`tabletype]~`quote) and ""~r[`message];
         fileloading[loadid]:@[fileloading[loadid];`mergestarttime;:;.proc.cp[]];
         h:.servers.getserverbytype[`gateway;`w;`any];
         (neg h)(`.gw.asyncexecjpt;
@@ -45,12 +44,17 @@ finishload:{[q;r]
     };
 
 finishmerge:{[q;r]
+    robr::r;
     fileloading[loadid]:@[fileloading[loadid];`mergeendtime;:;.proc.cp[]];
   };
 
 // async message to invoke loader process when new nyse file is found
 // this will invoke a loader slave to run loadtaqfile function in taqloader
 runload:{[path;file]
+    // check if file has already been loaded
+    if[1h in exec loadstatus from fileloading where filename=`$file;
+        .lg.o[`runload;"The following file has already been successfully loaded: ", file];
+        .lg.o[`runload;"Exiting load function";:()]];
     filepath:hsym`$path,file;
     // define filetype based on name of incoming file from filealerter
     filetype: $[

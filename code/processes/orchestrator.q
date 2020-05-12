@@ -42,7 +42,6 @@ finishload:{[q;r]
     };
 
 finishmerge:{[q;r]
-    robr::r;
     fileloading[loadid]:@[fileloading[loadid];`mergeendtime;:;.proc.cp[]];
   };
 

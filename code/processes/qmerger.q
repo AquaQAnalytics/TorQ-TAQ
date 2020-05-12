@@ -67,6 +67,7 @@ movetohdb:{
   .lg.o[`quotemerger;"clearing ",string x, " from temporary database"];
   syscmd["rm -r ",string pardir];
   .lg.0[`quotemerger;"temporary db cleared"];
+  :1b
   }
 
 /-attempt to load merged table, create it if it doesnt exist

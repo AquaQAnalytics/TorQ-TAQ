@@ -53,7 +53,7 @@ runload:{[path;file]
     // if forceload is on, load regardless
     if[1h in exec loadstatus from fileloading where filename=`$file;
         .lg.o[`runload;"The following file has already been successfully loaded: ", file];
-        $[forceload;.lg.o[`runload;"Forcing reload on ",file,"despite already being successfully loaded"];
+        $[forceload;.lg.o[`runload;"Forcing reload on ",file," despite already being successfully loaded"];
         (.lg.o[`runload;"Exiting load function"];:())]];
     filepath:hsym`$path,file;
     // define filetype based on name of incoming file from filealerter

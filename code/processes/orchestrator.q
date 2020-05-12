@@ -25,8 +25,6 @@ startload:{
 
 // update record that file has been loaded
 finishload:{[q;r]
-    // 1h in exec loadstatus from fileloading where filename=`SPLITS_US_ALL_BBO_A_20180103.gz
-    robr2::r;
     // if taqloader isn't available, error is returned and r is a string with connection error 
     if[10=type r;
         fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`message;:;(.proc.cp[];0h;r)];

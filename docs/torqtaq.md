@@ -21,12 +21,12 @@ This documentation will go over a brief summary of the architecture, the
 processes involved, and use cases for the TAQ Loader.
 
 Architecture
-------------
+============
 ** add chart here **
 
 
 Processes
----------
+=========
 The main processes currently involved in TorQ-TAQ are the orchestrator, the 
 loader slaves and the merger to merge all 26 quote files for each day.  This
 architecture also uses the standard TorQ discovery and gateway processes which

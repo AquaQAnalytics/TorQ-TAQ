@@ -15,3 +15,4 @@ true,0,,q,result2[`mergemessage]="Unsuccessful: splitnonexistant",0,0,check erro
 true,0,,q,result3[`mergemessage]="Unsuccessful: type",0,0,check error mergemessage,
 run,0,,q,result4:movetohdb 2018.01.03,0,0,run move to hdb function,
 true,0,,q,result4~1b,0,0,check movetohdb result,
+fail,0,,q,movetohdb .z.d,0,0,check moving wrond date,

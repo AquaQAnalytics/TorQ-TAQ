@@ -1,5 +1,5 @@
 optionalparams:@[value;`optionalparams;()!()]
-forceload:@[value;`forceload;()!()]
+forceload:@[value;`forceload;0b]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
 .proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]

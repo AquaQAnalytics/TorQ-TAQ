@@ -1,8 +1,13 @@
 hdbdir:@[value;`hdbdir;`:hdbdir]
 symdir:@[value;`symdir;`:symdir]
 tempdb:@[value;`tempdb;`:tempdb]
+filedrop:@[value;`filedrop;`:filedrop]
 optionalparams:@[value;`optionalparams;()!()]
 defaults:`chunksize`partitioncol`partitiontype`compression`gc!(`int$100*2 xexp 20;`ticktime;`date;();0b)
+
+timeconverter:{
+    "n"$sum 3600000000000 60000000000 1000000000 1*deltas[d*x div/: d]div d:10000000000000 100000000000 1000000000 1
+  };
 
 // set the schema for each table
 tradeparams:defaults,(!) . flip (
@@ -70,7 +75,7 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
         .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];
         :buildreturndict[returndict;0h;errmsg]];
     // Check if file exists in filedrop directory, otherwise exit with error
-    $[filetoload in key[hsym`$getenv[`TORQTAQFILEDROP]];
+    $[filetoload in key[filedrop];
         .lg.o[`loadtaqfile;raze "File successfully found in ",getenv[`TORQTAQFILEDROP]];
         doload:0b];
     if[not doload;.lg.e[`loadtaqfile;
@@ -80,10 +85,6 @@ loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
     if[doload;
         params:buildparams[filetype;returndict;filetoload];
         :executeload[params;filepath;filetoload;returndict;filetype;errmsg]];
-  };
-
-timeconverter:{
-    "n"$sum 3600000000000 60000000000 1000000000 1*deltas[d*x div/: d]div d:10000000000000 100000000000 1000000000 1
   };
 
 // function for constructing return dictionary in loadtaqfile
@@ -100,9 +101,9 @@ buildparams:{[ft;rd;ftl]
         [.lg.e[`fifoloader;errmsg:(string ft)," is an unknown or unsupported file type"];
         :buildreturndict[rd;0h;errmsg]]];
     p[`dbdir]:$[
-        ft~`trade;`$(string p[`tempdb]),"/final/";
+        ft~`trade;`$(string p[`tempdb]),"/final";
         ft~`quote;`$(string p[`tempdb]),"/",(string ft),last -12_string ftl;
-        `$(string params[`tempdb]),"/final/"];p
+        `$(string p[`tempdb]),"/final"];p
   };
 
 // function to execute the load of the taq file in loadtaqfile
@@ -115,7 +116,7 @@ executeload:{[p;fp;ftl;d;ft;em]
     .lg.o[`fifoloader;"Loading ",(string ftl)];
     // execute load, trap error if load is unsuccessful and assign the error message for monitoring table
     loadmsg:.[{.Q.fpn[x;y;z]};(.loader.loaddata[p,(enlist`filename)!enlist `$-3_string ftl];hsym `$fifo;p`chunksize);
-        {[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error:",e];(0b;msg)}];
+        {[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error: ",e];(0b;msg)}];
     if[0b~first loadmsg;:buildreturndict[d;0h;last loadmsg]];
     .lg.o[`fifoloader;(string ftl)," has successfully been loaded"];
     syscmd["rm ",fifo];

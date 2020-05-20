@@ -31,6 +31,7 @@ startload:{
 
 // update record that file has been loaded
 finishload:{[q;r]
+    res2::r;
     // if taqloader isn't available, error is returned and r is a string with connection error 
     if[10=type r;
         fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`message;:;(.proc.cp[];0h;r)];
@@ -47,6 +48,7 @@ finishload:{[q;r]
   };
 
 finishmerge:{[q;r]
+    res::r;
     fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime;:;.proc.cp[]];
     if[1b~r[`fullmergestatus];mergecomplete::1b];
     // if trade and nbbo are finished before quotes, movetohdb called here

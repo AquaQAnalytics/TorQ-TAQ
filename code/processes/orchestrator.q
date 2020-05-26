@@ -1,4 +1,5 @@
 optionalparams:@[value;`optionalparams;()!()]
+loadfiles:@[value;`loadfiles;`trade`quote`nbbo]
 forceload:@[value;`forceload;0b]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
@@ -31,7 +32,6 @@ startload:{
 
 // update record that file has been loaded
 finishload:{[q;r]
-    res2::r;
     // if taqloader isn't available, error is returned and r is a string with connection error 
     if[10=type r;
         fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`message;:;(.proc.cp[];0h;r)];
@@ -48,7 +48,8 @@ finishload:{[q;r]
   };
 
 finishmerge:{[q;r]
-    res::r;
+    if[10=type r;
+        fileloading[loadid]:@[fileloading[loadid];`mergeendtime;:;.proc.cp[]];:()];
     fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime;:;.proc.cp[]];
     if[1b~r[`fullmergestatus];mergecomplete::1b];
     // if trade and nbbo are finished before quotes, movetohdb called here
@@ -80,11 +81,14 @@ runload:{[path;file]
         file like "*SPLITS*";`quote;
         file like "*NBBO*";`nbbo;
         [.lg.e[`fifoloader;errmsg:(string file)," is an unknown or unsupported file type"];'errmsg]];
+    if[not filetype in loadfiles; .lg.o[`runload;"Filetype ", string filetype, "has not been chosen to be loaded"]; :()];
     // update monitoring table
-    startload[`$file;filetype];  // defines loadid globally 
+    startload[`$file;filetype];  // defines loadid globally
+    // define dictionary to send to loader
+    taqloaderparams:`filetype`filetoload`filepath`loadid!(filetype;`$file;filepath;loadid);
     // open handle to gateway
     h:.servers.getserverbytype[`gateway;`w;`any];
     // async call to gw to invoke loader process to load file
     .lg.o[`runload;"Initiating loader process"];
-    (neg h)(`.gw.asyncexecjpt; (`loadtaqfile;filetype;`$file;filepath;loadid;optionalparams);`taqloader;{x};`finishload;0Wn);
+    (neg h)(`.gw.asyncexecjpt; (`loadtaqfile;taqloaderparams;optionalparams);`taqloader;{x};`finishload;0Wn);
   };

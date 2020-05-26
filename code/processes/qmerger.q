@@ -1,5 +1,5 @@
 hdbdir:@[value;`hdbdir;`:hdb]
-tempdbdir:@[value;`tempdbdir;()!()]
+tempdbdir:@[value;`tempdbdir;`:tempdb]
 mergedir:@[value;`mergedir;`:mergedir]
 
 // reset temp hdb and update merged table
@@ -59,7 +59,7 @@ mergesplit:{
  }
 
 // move merged quotes to date partition in hdb
-movetohdb:{
+movepartohdb:{
   pardir:` sv tempdbdir,`final, `$string x;
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
   syscmd[" " sv ("mv"; 1_string[pardir];1_string[hdbdir])];
@@ -68,6 +68,11 @@ movetohdb:{
   syscmd["rm -r ",string pardir];
   .lg.o[`quotemerger;"temporary db cleared"];
   :1b
+  }
+
+manmovetohdb:{
+  pardir:` sv tempdbdir,`final, `$string x, `$string y;
+  syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),string x];
   }
 
 // attempt to load merged table, create it if it doesnt exist

@@ -92,3 +92,10 @@ runload:{[path;file]
     .lg.o[`runload;"Initiating loader process"];
     (neg h)(`.gw.asyncexecjpt; (`loadtaqfile;taqloaderparams;optionalparams);`taqloader;{x};`finishload;0Wn);
   };
+
+
+manualmovetohdb:{
+    h:.servers.getserverbytype[`gateway;`w;`any];
+        .lg.o[`startmovetohdb;"Moving ",(string y), " to hdb"]
+        (neg h)(`.gw.asyncexecjpt;(`manualmovetohdb;x;y);`qmerger;{x};`finishmovetohdb;0Wn)
+  }

@@ -50,9 +50,10 @@ finishload:{[q;r]
   };
 
 finishmerge:{[q;r]
+    res::r;
     if[10=type r;
         fileloading[loadid]:@[fileloading[loadid];`mergeendtime`mergestatus`mergemessage;:;(.proc.cp[];0h;r)];:()];
-    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime;:;.proc.cp[]];
+    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime`mergestatus`mergemessage;:;(r[`mergeendtime];r[`mergestatus];r[`mergemessage]];
     if[1b~r[`fullmergestatus];mergecomplete::1b];
     // if trade and nbbo are finished before quotes, movetohdb called here
     if[mergecomplete and 2=sum exec loadstatus from fileloading where loadstatus=1h,filetype in `trade`nbbo;startmovetohdb[r[`tabledate]]];
@@ -100,4 +101,4 @@ manualmovetohdb:{[date;filetype]
     h:.servers.getserverbytype[`gateway;`w;`any];
         .lg.o[`startmovetohdb;"Moving ",(string filetype), " to hdb"]
         (neg h)(`.gw.asyncexecjpt;(`manmovetohdb;date;filetype);`qmerger;{x};`finishmovetohdb;0Wn)
-  }
+  };

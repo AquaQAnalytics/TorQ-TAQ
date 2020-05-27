@@ -59,20 +59,20 @@ mergesplit:{
  }
 
 // move merged quotes to date partition in hdb
-movepartohdb:{
-  pardir:` sv tempdbdir,`final, `$string x;
+movepartohdb:{[date]
+  pardir:` sv tempdbdir,`final, `$string date;
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
-  syscmd[" " sv ("mv"; 1_string[pardir];1_string[hdbdir])];
+  syscmd[" " sv ("mv";.os.pth pardir;.os.pth hdbdir)];
   .lg.o[`quotemerger;"quote data moved to hdb"];
-  .lg.o[`quotemerger;"clearing ",string x, " from temporary database"];
+  .lg.o[`quotemerger;"clearing ",string date, " from temporary database"];
   syscmd["rm -r ",string pardir];
   .lg.o[`quotemerger;"temporary db cleared"];
   :1b
   }
 
-manmovetohdb:{
-  pardir:` sv tempdbdir,`final, `$string x, `$string y;
-  syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),string x];
+manmovetohdb:{[date;filetype]
+  pardir:` sv tempdbdir,`final, `$string date, `$string filetype;
+  syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),string date];
   }
 
 // attempt to load merged table, create it if it doesnt exist

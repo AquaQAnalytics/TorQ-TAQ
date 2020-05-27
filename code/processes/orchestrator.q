@@ -3,7 +3,11 @@ loadfiles:@[value;`loadfiles;`trade`quote`nbbo]
 forceload:@[value;`forceload;0b]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
-.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
+//.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
+
+\x .z.pi
+\x .z.ps 
+.z.ps:{value 0N!x}
 
 // table to track progress of each file to load
 fileloading:(
@@ -13,11 +17,11 @@ fileloading:(
     split:`symbol$();
     loadstarttime:`timestamp$();
     loadendtime:`timestamp$();
-    mergestarttime:`timestamp$();
-    mergeendtime:`timestamp$();
     loadstatus:`short$();
     loadmessage:();
-    mergestatus:`short$();
+    mergestarttime:`timestamp$();
+    mergeendtime:`timestamp$();
+    mergestatus:`boolean$();
     mergemessage:()
     );
 
@@ -41,7 +45,7 @@ finishload:{[q;r]
     // updated monitoring stats
     fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`loadendtime`loadstatus`loadmessage;:;(r[`loadendtime];r[`loadstatus];r[`loadmessage])];
     // if filetype is a quote invoke merger here
-    if[(r[`tabletype]~`quote) and ""~r[`loadmessage];
+    if[(r[`tabletype]~`quote) and "success"~r[`loadmessage];
         fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergestarttime;:;.proc.cp[]];
         h:.servers.getserverbytype[`gateway;`w;`any];
         (neg h)(`.gw.asyncexecjpt;(`mergesplit;4#r);`qmerger;{x};`finishmerge;0Wn)];
@@ -50,10 +54,9 @@ finishload:{[q;r]
   };
 
 finishmerge:{[q;r]
-    res::r;
     if[10=type r;
         fileloading[loadid]:@[fileloading[loadid];`mergeendtime`mergestatus`mergemessage;:;(.proc.cp[];0h;r)];:()];
-    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime`mergestatus`mergemessage;:;(r[`mergeendtime];r[`mergestatus];r[`mergemessage]];
+    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime`mergestatus`mergemessage;:;(r[`mergeendtime];r[`mergestatus];r[`mergemessage])];
     if[1b~r[`fullmergestatus];mergecomplete::1b];
     // if trade and nbbo are finished before quotes, movetohdb called here
     if[mergecomplete and 2=sum exec loadstatus from fileloading where loadstatus=1h,filetype in `trade`nbbo;startmovetohdb[r[`tabledate]]];

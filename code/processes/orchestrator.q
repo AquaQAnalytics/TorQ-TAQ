@@ -16,7 +16,9 @@ fileloading:(
     mergestarttime:`timestamp$();
     mergeendtime:`timestamp$();
     loadstatus:`short$();
-    message:()
+    loadmessage:();
+    mergestatus:`short$();
+    mergemessage:()
     );
 
 mergecomplete:0b;
@@ -34,12 +36,12 @@ startload:{
 finishload:{[q;r]
     // if taqloader isn't available, error is returned and r is a string with connection error 
     if[10=type r;
-        fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`message;:;(.proc.cp[];0h;r)];
+        fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`loadmessage;:;(.proc.cp[];0h;r)];
         .lg.o[`finishload;r];:()];
     // updated monitoring stats
-    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`loadendtime`loadstatus`message;:;(r[`loadendtime];r[`loadstatus];r[`message])];
+    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`loadendtime`loadstatus`loadmessage;:;(r[`loadendtime];r[`loadstatus];r[`loadmessage])];
     // if filetype is a quote invoke merger here
-    if[(r[`tabletype]~`quote) and ""~r[`message];
+    if[(r[`tabletype]~`quote) and ""~r[`loadmessage];
         fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergestarttime;:;.proc.cp[]];
         h:.servers.getserverbytype[`gateway;`w;`any];
         (neg h)(`.gw.asyncexecjpt;(`mergesplit;4#r);`qmerger;{x};`finishmerge;0Wn)];
@@ -49,7 +51,7 @@ finishload:{[q;r]
 
 finishmerge:{[q;r]
     if[10=type r;
-        fileloading[loadid]:@[fileloading[loadid];`mergeendtime;:;.proc.cp[]];:()];
+        fileloading[loadid]:@[fileloading[loadid];`mergeendtime`mergestatus`mergemessage;:;(.proc.cp[];0h;r)];:()];
     fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime;:;.proc.cp[]];
     if[1b~r[`fullmergestatus];mergecomplete::1b];
     // if trade and nbbo are finished before quotes, movetohdb called here
@@ -93,9 +95,8 @@ runload:{[path;file]
     (neg h)(`.gw.asyncexecjpt; (`loadtaqfile;taqloaderparams;optionalparams);`taqloader;{x};`finishload;0Wn);
   };
 
-
 manualmovetohdb:{
     h:.servers.getserverbytype[`gateway;`w;`any];
         .lg.o[`startmovetohdb;"Moving ",(string y), " to hdb"]
-        (neg h)(`.gw.asyncexecjpt;(`manualmovetohdb;x;y);`qmerger;{x};`finishmovetohdb;0Wn)
+        (neg h)(`.gw.asyncexecjpt;(`manmovetohdb;x;y);`qmerger;{x};`finishmovetohdb;0Wn)
   }

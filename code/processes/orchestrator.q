@@ -101,3 +101,14 @@ manualmovetohdb:{[date;filetype]
         .lg.o[`startmovetohdb;"Moving ",(string filetype), " to hdb"]
         (neg h)(`.gw.asyncexecjpt;(`manmovetohdb;date;filetype);`qmerger;{x};`finishmovetohdb;0Wn)
   };
+
+makeemptyschema:{
+    f:`trade`quote`nbbo;
+    a:f except loadfiles; 
+    trade:([] ticktime:`timestamp$();exch:`symbol$();sym:`symbol$();cond:`symbol$();size:`int$();price:`float$();stop:`boolean$();corr:`int$();sequence:`long$();tradeid:`int$();cts:`char$();trf:`char$();parttime:`timestamp$());
+    quote:([] ticktime:`timestamp$();exch:`symbol$();sym:`symbol$();bid:`float$();bidsize:`int$();ask:`float$()asksize:`int$();cond:`symbol$();sequence:`long$();bbo:`char$();qbbo:`char$();cqs:`char;rpi:`char$();shortsale:`char$();utpind:`char$();parttime:`timestamp$());
+    // Finish nbbo schema nbbo:([]  ticktime:`timestamp$();exch:`char$();sym:`char$();bid:`float$();bidsize:`int$();ask:`foat$();asksize:`int$();cond:`char$();sequence:`long$();bbo:`char$();qbbo:`char$();cqs:`char$();qcond bbex bbprice bbsize bbmmid baex baprice basize bammid luldind nbboind;parttime:`timestamp$())
+
+    // return schema based on a, these will be empty schema used for making hdb correct
+
+  }

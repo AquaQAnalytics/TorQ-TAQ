@@ -95,8 +95,9 @@ runload:{[path;file]
     (neg h)(`.gw.asyncexecjpt; (`loadtaqfile;taqloaderparams;optionalparams);`taqloader;{x};`finishload;0Wn);
   };
 
-manualmovetohdb:{
+// function to manually move data to hdb, filetype must be one of `trade`quote`nbbo
+manualmovetohdb:{[date;filetype]
     h:.servers.getserverbytype[`gateway;`w;`any];
-        .lg.o[`startmovetohdb;"Moving ",(string y), " to hdb"]
-        (neg h)(`.gw.asyncexecjpt;(`manmovetohdb;x;y);`qmerger;{x};`finishmovetohdb;0Wn)
+        .lg.o[`startmovetohdb;"Moving ",(string filetype), " to hdb"]
+        (neg h)(`.gw.asyncexecjpt;(`manmovetohdb;date;filetype);`qmerger;{x};`finishmovetohdb;0Wn)
   }

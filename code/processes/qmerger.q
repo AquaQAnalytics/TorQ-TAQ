@@ -36,13 +36,13 @@ mergesplit:{
   // attempt to merge and key result
   .lg.o[`quotemerger;"Attempting to merge split ",string split];
 
-  $[merged[(x[`tabledate];split)][`status];.lg.o[`quotemerger;"Unsuccessful: already merged"];];
+  $[merged[(x[`tabledate];split)][`status];.lg.o[`quotemerger;"unsuccessful: already merged"];];
   
   a:$[merged[(x[`tabledate];split)][`status];
-    (0b;"Unsuccessful: already merged";.z.P);
-    @[{(merge x;"Success";.z.P)};
+    (0b;"unsuccessful: already merged";.z.P);
+    @[{(merge x;"success";.z.P)};
       (x[`tablepath];x[`tabledate];split;quotedir);
-      {(0b;"Unsuccessful:",x;.z.P)}
+      {(0b;"unsuccessful:",x;.z.P)}
      ]
     ];
   result:`mergestatus`mergemessage`mergeendtime!a;

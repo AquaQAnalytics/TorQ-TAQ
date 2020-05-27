@@ -59,37 +59,38 @@ nbboparams:defaults,(!) . flip (
         );
 
 // function to load all taq files from nyse
-loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
+// loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
+loadtaqfile:{[taqloaderparams;optionalparams]
     // boolean to determine if load function should be executed or not
     doload:1b;
     // empty error message if the load is successful, otherwise error message will be printed to monitoring table as a string
-    errmsg:"";
+    errmsg:"success";
     // initial definition of the dictionary to return upon completion or exit
     returndict:(!) . flip (
         (`tablepath;`);
-        (`tabletype;filetype);
-        (`loadid;loadid);
-        (`tabledate;@[{"D"$-8#-3_string x};filetoload;0Nd]));
+        (`tabletype;taqloaderparams[`filetype]);
+        (`loadid;taqloaderparams[`loadid]);
+        (`tabledate;@[{"D"$-8#-3_string x};taqloaderparams`filetoload;0Nd]));
     // Check if date was successfully extracted, if not exit with error
     if[0Nd~returndict`tabledate;
-        .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];
+        .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string taqloaderparams`filetoload];
         :buildreturndict[returndict;0h;errmsg]];
     // Check if file exists in filedrop directory, otherwise exit with error
-    $[filetoload in key[filedrop];
+    $[taqloaderparams[`filetoload] in key[filedrop];
         .lg.o[`loadtaqfile;raze "File successfully found in ",getenv[`TORQTAQFILEDROP]];
         doload:0b];
     if[not doload;.lg.e[`loadtaqfile;
-        errmsg:"Could not find: ",.os.pth filepath];
+        errmsg:"Could not find: ",.os.pth taqloaderparams`filepath];
         :buildreturndict[returndict;0h;errmsg]];
     // if file name is correct and exists in filedrop directory, execute the load  
     if[doload;
-        params:buildparams[filetype;returndict;filetoload];
-        :executeload[params;filepath;filetoload;returndict;filetype;errmsg]];
+        params:buildparams[taqloaderparams`filetype;returndict;taqloaderparams`filetoload];
+        :executeload[params;taqloaderparams`filepath;taqloaderparams`filetoload;returndict;taqloaderparams`filetype;errmsg]];
   };
 
 // function for constructing return dictionary in loadtaqfile
 buildreturndict:{[d;s;e] 
-    d,`loadendtime`loadstatus`message!(.proc.cp[];s;e)
+    d,`loadendtime`loadstatus`loadmessage!(.proc.cp[];s;e)
   };
 
 // function for building parameters used in loadtaqfile based on file type

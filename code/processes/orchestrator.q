@@ -3,7 +3,7 @@ loadfiles:@[value;`loadfiles;`trade`quote`nbbo]
 forceload:@[value;`forceload;0b]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
-//.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
+.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
 
 // table to track progress of each file to load
 fileloading:(

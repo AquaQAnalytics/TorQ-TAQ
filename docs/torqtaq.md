@@ -15,14 +15,14 @@ structure:
 - `SPLITS_US_ALL_BBO_*_YYYYMMDD.gz` *(Best Bid Offer - 26 files per day)* 
 
 The specification for each of the file types can be found on the NYSE website 
-[here](https://www.nyse.com/publicdocs/nyse/data/Daily_TAQ_Client_Spec_v3.2.pdf)
+[here.](https://www.nyse.com/publicdocs/nyse/data/Daily_TAQ_Client_Spec_v3.2.pdf)
 
 This documentation will go over a brief summary of the architecture, the 
 processes involved, and use cases for the TAQ Loader.
 
 Architecture
 ============
-** add chart here **
+![TorQ-TAQ Architecture](images/TAQ-architecture.png)
 
 
 Processes
@@ -40,14 +40,35 @@ in charge of keeping up with various monitoring statistics.  These statistics
 include load start times and end times, and indicator if the load was successful,
 and error logging for if a process fails.
 
+The Orchestrator requires three parameters to run properly; if these are not 
+defined in the config file, they will be supplied with default values.  These
+parameters are:
+
+- **optionalparams**: these are additional parameters that you can supply for
+the loader function used in TorQ to load data. The dataloader utility documentation
+can be found [here.] (https://aquaqanalytics.github.io/TorQ/utilities/#dataloaderq)
+
+- **loadfiles**: this is a list of symbols which allows you to choose which TAQ
+files you are interested in. This can be defined in the config file for the 
+orchestrator similar to optionalparams. TorQ-TAQ currently supports trade, quote
+and nbbo and so this loadfiles variable should only contain these three file types.
+
+- **forceload**: this is a boolean setting which allows you to manually load files
+even if they have already been successfully loaded.  This can be used if a file
+has been loaded but has been deleted or tampered with in any way.  This setting
+may be defined in the config file of the orchestrator or can be overwritten in 
+the orchestrator process.
+
 ## Loader Gateway
-The loader gateway is just a standard TorQ gateway.
+The loader gateway is just a standard TorQ gateway.  TorQ Gateway documentation
+can be found [here.](https://aquaqanalytics.github.io/TorQ/Processes/#gateway)
+
+## Loader Slaves
+These processes responsible for executing loads. Multiple loader processes exist
+to allow loads to run in parallel.
 
 ## Quote Merger
 The quote merger is the process which will merge all 26 split files as they are
 loaded.  Once all split files are successfully loaded and merged, this process
 moves all data to the HDB.
-
-## Dowloader
-Not yet implemented.
 

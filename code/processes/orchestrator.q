@@ -3,7 +3,7 @@ loadfiles:@[value;`loadfiles;`trade`quote`nbbo]
 forceload:@[value;`forceload;0b]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
-.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
+//.proc.loadf[getenv[`KDBCODE],"/processes/filealerter.q"]
 
 // table to track progress of each file to load
 fileloading:(
@@ -102,13 +102,12 @@ manualmovetohdb:{[date;filetype]
         (neg h)(`.gw.asyncexecjpt;(`manmovetohdb;date;filetype);`qmerger;{x};`finishmovetohdb;0Wn)
   };
 
+// function which makes empty schema for tables that are not selected for download
 makeemptyschema:{
     f:`trade`quote`nbbo;
     a:f except loadfiles; 
     trade:([] ticktime:`timestamp$();exch:`symbol$();sym:`symbol$();cond:`symbol$();size:`int$();price:`float$();stop:`boolean$();corr:`int$();sequence:`long$();tradeid:`int$();cts:`char$();trf:`char$();parttime:`timestamp$());
     quote:([] ticktime:`timestamp$();exch:`symbol$();sym:`symbol$();bid:`float$();bidsize:`int$();ask:`float$()asksize:`int$();cond:`symbol$();sequence:`long$();bbo:`char$();qbbo:`char$();cqs:`char;rpi:`char$();shortsale:`char$();utpind:`char$();parttime:`timestamp$());
-    // Finish nbbo schema nbbo:([]  ticktime:`timestamp$();exch:`char$();sym:`char$();bid:`float$();bidsize:`int$();ask:`foat$();asksize:`int$();cond:`char$();sequence:`long$();bbo:`char$();qbbo:`char$();cqs:`char$();qcond bbex bbprice bbsize bbmmid baex baprice basize bammid luldind nbboind;parttime:`timestamp$())
-
-    // return schema based on a, these will be empty schema used for making hdb correct
-
+    nbbo:([]  ticktime:`timestamp$();exch:`char$();sym:`char$();bid:`float$();bidsize:`int$();ask:`float$();asksize:`int$();cond:`char$();sequence:`long$();bbo:`char$();qbbo:`char$();cqs:`char$();qcond:`char$();bbex:`char$();bbprice:`float$();bbsize:`int$();bbmmid:`char$();baex:`char$();baprice:`float$();basize:`int$();bammid:`char$();luldind:`char$();nbboind:`char$();parttime:`timestamp$());
+    value each a
   }

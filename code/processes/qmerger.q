@@ -9,7 +9,7 @@ reset:{
   empty:select from (get x[`tablepath]) where ticktime<x[`tabledate];  
   y set empty;
   .lg.o[`quotemerger;"date partition created"];
- }
+  };
 
 // base merge function
 merge:{
@@ -18,26 +18,20 @@ merge:{
   .lg.o[`quotemerger;string[x[2]]," merged"];
   merged[(x[1];x[2])]:1b;
   return:1b
- }
+  };
 
 // quote merge function
 mergesplit:{
-  
   pardir:` sv tempdbdir,`final, `$string x[`tabledate];
   quotedir:` sv pardir,`quote,`;
-
   // extract split letter, path of form `:/path/to/quoteA/date/table 
   split:`$first vs["/";reverse string x[`tablepath]][2];
-
   // check if date has entries in merged table
   c:count a:exec distinct date from merged;
   if[c=a?x[`tabledate];reset[x;quotedir]];
-
   // attempt to merge and key result
   .lg.o[`quotemerger;"Attempting to merge split ",string split];
-
   $[merged[(x[`tabledate];split)][`status];.lg.o[`quotemerger;"unsuccessful: already merged"];];
-  
   a:$[merged[(x[`tabledate];split)][`status];
     (0b;"unsuccessful: already merged";.z.P);
     @[{(merge x;"success";.z.P)};
@@ -46,20 +40,18 @@ mergesplit:{
      ]
     ];
   result:`mergestatus`mergemessage`mergeendtime!a;
- 
   // save merged table for use in orchestrator process
   save mergedir;
-
   syscmd["rm -r ",1_"/" sv -2_vs["/";string x[`tablepath]]];
-
   // build return dictionary
   b:`=(merged?0b)[`split];
   returnkeys:`loadid`mergelocation`fullmergestatus;
   return:result,returnkeys!(x[`loadid];quotedir;b)
- }
+  };
 
 // move merged quotes to date partition in hdb
-movepartohdb:{[date]
+movepartohdb:{[date;loadfiles]
+  makeemptyschema[loadfiles];
   pardir:` sv tempdbdir,`final, `$string date;
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
   syscmd[" " sv ("mv";.os.pth pardir;.os.pth hdbdir)];
@@ -68,12 +60,23 @@ movepartohdb:{[date]
   syscmd["rm -r ",string pardir];
   .lg.o[`quotemerger;"temporary db cleared"];
   :1b
-  }
+  };
 
 manmovetohdb:{[date;filetype]
   pardir:` sv tempdbdir,`final, `$string date, `$string filetype;
   syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),string date];
-  }
+  };
+
+// function which makes empty schema for tables that are not selected for download
+makeemptyschema:{[loadfiles;pardir]
+    pardir:` sv tempdbdir,`final, `$string date;
+    f:`trade`quote`nbbo;
+    a:f except loadfiles;
+    emptytaqschema[]; 
+    b:.Q.dd[pardir]each a,'`;
+  // need to save empty schemas in tempdb/final, will add soon
+  // this will be called in moveparttohdb, empty schemas will be made for files not in loadfiles variable
+  };
 
 // attempt to load merged table, create it if it doesnt exist
 merged:@[{get x};mergedir;{([date:"d"$();split:"s"$()]status:"b"$())}]

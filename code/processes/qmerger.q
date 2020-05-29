@@ -70,7 +70,10 @@ movetohdb:{
   .lg.o[`quotemerger;"temporary db cleared"];
 =======
   .lg.0[`quotemerger;"temporary db cleared"];
+<<<<<<< HEAD
 >>>>>>> test movetohdb output
+=======
+>>>>>>> 917d23a54b8ce5b7acceb9e0a928d9079db280c1
   :1b
   }
 

@@ -13,4 +13,5 @@ true,0,,q,(raze value type each result)~(-1 10 -12 -7 -11 -1h),0,0,compare resul
 true,0,,q,result1[`mergestatus]=1b,0,0,check merge was successful,
 true,0,,q,result2[`mergemessage]="Unsuccessful: splitnonexistant",0,0,check error mergemessage,
 true,0,,q,result3[`mergemessage]="Unsuccessful: type",0,0,check error mergemessage,
-run,0,,q,movetohdb 2018.01.03,0,0,run move to hdb function,
+run,0,,q,result4:movetohdb 2018.01.03,0,0,run move to hdb function,
+true,0,,q,result4~1b,0,0,check movetohdb result,

@@ -9,87 +9,38 @@ timeconverter:{
     "n"$sum 3600000000000 60000000000 1000000000 1*deltas[d*x div/: d]div d:10000000000000 100000000000 1000000000 1
   };
 
-// set the schema for each table
-tradeparams:defaults,(!) . flip (
-    (`headers;`ticktime`exch`sym`cond`size`price`stop`corr`sequence`tradeid`cts`trf`parttime);
-    (`types;"JSSSIFBIJICCJ");
-    (`tablename;`trade);
-    (`separator;enlist"|");
-    (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
-    (`symdir;symdir);            // where we enumerate against
-    (`tempdb;tempdb);
-    (`dataprocessfunc;{[params;data] `sym`ticktime`exch`cond`size`price`stop`corr`sequence`cts`trf xcols delete from
-    (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data) where null ticktime});
-    (`date;.z.d)
-        );
-
-quoteparams:defaults,(!) . flip (
-    (`headers;`ticktime`exch`sym`bid`bidsize`ask`asksize`cond`sequence`bbo`qbbo`cqs`rpi`shortsale`utpind`parttime);
-    (`types;"JSSFIFISJCC  CCCC  J");
-    (`tablename;`quote);
-    (`separator;enlist"|");
-    (`dbdir;hdbdir);               // this parameter is defined in the top level taqloader script
-    (`symdir;symdir);              // where we enumerate against
-    (`tempdb;tempdb);
-    (`dataprocessfunc;{[params;data]
-        `sym`ticktime`exch`bid`bidsize`ask`asksize`cond`mmid`bidexch`askexch`sequence`bbo`qbbo`corr`cqs`rpi`shortsale`cqsind`utpind`parttime xcols
-            update mmid:(count ticktime)#enlist "",bidexch:`,askexch:`,corr:" ",cqsind:" " from
-              delete from
-              (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data)
-              where null ticktime});
-    (`date;.z.d)
-        );
-
-nbboparams:defaults,(!) . flip (
-    (`headers;`ticktime`exch`sym`bid`bidsize`ask`asksize`cond`sequence`bbo`qbbo`cqs`qcond`bbex`bbprice`bbsize`bbmmid`baex`baprice`basize`bammid`luldind`nbboind`parttime);
-    (`types;"JSSFIFISJCC  CCCFI*CFI*CC J");
-         (`tablename;`nbbo);
-         (`separator;enlist"|");
-         (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
-         (`symdir;symdir);            // where we enumerate against
-         (`tempdb;tempdb);
-         (`dataprocessfunc;{[params;data] 
-	`sym`ticktime`exch`bid`bidsize`ask`asksize`cond`mmid`bidexch`askexch`sequence`bbo`qbbo`corr`cqs`qcond`bbex`bbprice`bbsize`bbmmid`bbmmloc`bbmmdeskloc`baex`baprice`basize`bammid`bammloc`bammdeskloc`luldind`nbboind`parttime xcols 
-	// add in blank fields which don't exist any more 
- 	update mmid:(count ticktime)#enlist "",bidexch:`,askexch:`,corr:" ",bbmmloc:`,bbmmdeskloc:" ",bammloc:`,bammdeskloc:" " from 
- 	   delete from 
-	   (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data) 
-	  where null ticktime});
-         (`date;.z.d)
-        );
-
 // function to load all taq files from nyse
-loadtaqfile:{[filetype;filetoload;filepath;loadid;optionalparams]
+loadtaqfile:{[taqloaderparams;optionalparams]
     // boolean to determine if load function should be executed or not
     doload:1b;
     // empty error message if the load is successful, otherwise error message will be printed to monitoring table as a string
-    errmsg:"";
+    errmsg:"success";
     // initial definition of the dictionary to return upon completion or exit
     returndict:(!) . flip (
         (`tablepath;`);
-        (`tabletype;filetype);
-        (`loadid;loadid);
-        (`tabledate;@[{"D"$-8#-3_string x};filetoload;0Nd]));
+        (`tabletype;taqloaderparams[`filetype]);
+        (`loadid;taqloaderparams[`loadid]);
+        (`tabledate;@[{"D"$-8#-3_string x};taqloaderparams`filetoload;0Nd]));
     // Check if date was successfully extracted, if not exit with error
     if[0Nd~returndict`tabledate;
-        .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string filetoload];
+        .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string taqloaderparams`filetoload];
         :buildreturndict[returndict;0h;errmsg]];
     // Check if file exists in filedrop directory, otherwise exit with error
-    $[filetoload in key[filedrop];
+    $[taqloaderparams[`filetoload] in key[filedrop];
         .lg.o[`loadtaqfile;raze "File successfully found in ",getenv[`TORQTAQFILEDROP]];
         doload:0b];
     if[not doload;.lg.e[`loadtaqfile;
-        errmsg:"Could not find: ",.os.pth filepath];
+        errmsg:"Could not find: ",.os.pth taqloaderparams`filepath];
         :buildreturndict[returndict;0h;errmsg]];
     // if file name is correct and exists in filedrop directory, execute the load  
     if[doload;
-        params:buildparams[filetype;returndict;filetoload];
-        :executeload[params;filepath;filetoload;returndict;filetype;errmsg]];
+        params:buildparams[taqloaderparams`filetype;returndict;taqloaderparams`filetoload];
+        :executeload[params;taqloaderparams`filepath;taqloaderparams`filetoload;returndict;taqloaderparams`filetype;errmsg]];
   };
 
 // function for constructing return dictionary in loadtaqfile
 buildreturndict:{[d;s;e] 
-    d,`loadendtime`loadstatus`message!(.proc.cp[];s;e)
+    d,`loadendtime`loadstatus`loadmessage!(.proc.cp[];s;e)
   };
 
 // function for building parameters used in loadtaqfile based on file type
@@ -124,3 +75,6 @@ executeload:{[p;fp;ftl;d;ft;em]
     d[`tablepath]:hsym`$(string p[`dbdir]),"/",(string d`tabledate),"/",(string ft);
     buildreturndict[d;1h;em]
   };
+
+// build taq load parameters
+maketaqparams[]

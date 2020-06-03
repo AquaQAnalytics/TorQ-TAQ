@@ -22,19 +22,8 @@ before,0,,q,"loadidq4:4",1,0,define loadid
 before,0,,q,"filetoloadq5:`EQY_US_ALL_NBBO_20180306.gz",1,0,define filetoload for quote with an incorrect date
 before,0,,q,"filepathq5:hsym`$getenv[`KDBTESTS],"/taqfiles/EQY_US_ALL_NBBO_20180306.gz"",1,0,define filepath for quote with an incorrect date
 before,0,,q,"loadidq5:5",1,0,define loadid
-before,0,,q,"a:"Could not find: "",1,0,define a
-before,0,,q,"b:a,.os.pth filepathq2",1,0,define b to complete path
-before,0,,q,"c:`$"quoteA/2018.01.03/quote"",1,0,define c as quote partition
-before,0,,q,"d:"Could not extract date in "",1,0,define d to complete path
-before,0,,q,"e:`$"final/2018.03.05/trade"",1,0,define trade partition
-before,0,,q,"f:`$"final/2018.03.06/nbbo"",1,0,define nbbo partition
-run,0,,q,"result1:loadtaqfile[filetypeq;filetoloadq1;filepathq1;loadidq1;optionalparams]",0,0, run loader function for correct file
-run,0,,q,"result2:loadtaqfile[filetypeq;filetoloadq2;filepathq2;loadidq2;optionalparams]",0,0, run loader function for file that does not exist
-run,0,,q,"result3:loadtaqfile[filetypeq;filetoloadq3;filepathq3;loadidq3;optionalparams]",0,0, run loader function for file with incorrect date
-run,0,,q,"result4:loadtaqfile[filetypet;filetoloadq4;filepathq4;loadidq4;optionalparams]",0,0, run loader function for correct trade file
-run,0,,q,"result5:loadtaqfile[filetypen;filetoloadq5;filepathq5;loadidq5;optionalparams]",0,0, run loader function for correct nbbo file
-true,0,,q,"(result1 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(.Q.dd[tempdb;c];`quote;1;2018.01.03;1h;"")",0,0,compare all results except loadendtime
-true,0,,q,"(result2 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(`;`quote;2;2018.01.03;0h;b)",0,0,compare all results except loadendtime
-true,0,,q,"(result3 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(`;`quote;3;0Nd;0h;d,string filetoloadq3)",0,0,compare all results except loadendtime
-true,0,,q,"(result4 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(.Q.dd[tempdb;e];`trade;4;2018.03.05;1h;"")",0,0,compare results for trade file
-true,0,,q,"(result5 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`message!(.Q.dd[tempdb;f];`nbbo;5;2018.03.06;1h;"")",0,0,compare results for nbbo file
+before,0,,q,"quoteparA:`$"quoteA/2018.01.03/quote"",1,0,define c as quote partition
+before,0,,q,"taqloaderparams:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq1;filepathq1;loadidq1)"
+run,0,,q,"result1:loadtaqfile[taqloaderparams;optionalparams]",0,0, run loader function for correct file
+true,0,,q,"(result1 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;quoteparA];`quote;1;2018.01.03;1h;"success")",0,0,compare all results except loadendtime
+

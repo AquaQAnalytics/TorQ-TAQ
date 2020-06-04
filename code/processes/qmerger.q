@@ -75,7 +75,7 @@ makeemptyschema:{[loadfiles;date]
     a:f except loadfiles;
     emptytaqschema[]; 
     b:.Q.dd[pardir]each a,'`;
-    b set' .Q.en[symdir;]each (emptyschemas[a]); // save empty schemas in tempdb, enumerates to same place 
+    b set' .Q.en[symdir;]each emptyschemas[a]; // save empty schemas in tempdb, enumerates to same place 
   };
 
 

@@ -1,5 +1,6 @@
 maketaqparams:{
-    tradeparams::defaults,(!) . flip (
+    defaults:`chunksize`partitioncol`partitiontype`compression`gc!(`int$100*2 xexp 20;`ticktime;`date;();0b);
+    tradeparams:defaults,(!) . flip (
         (`headers;`ticktime`exch`sym`cond`size`price`stop`corr`sequence`tradeid`cts`trf`parttime);
         (`types;"JSSSIFBIJICCJ");
         (`tablename;`trade);
@@ -11,7 +12,7 @@ maketaqparams:{
         (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data) where null ticktime});
         (`date;.z.d)
     );
-    quoteparams::defaults,(!) . flip (
+    quoteparams:defaults,(!) . flip (
         (`headers;`ticktime`exch`sym`bid`bidsize`ask`asksize`cond`sequence`bbo`qbbo`cqs`rpi`shortsale`utpind`parttime);
         (`types;"JSSFIFISJCC  CCCC  J");
         (`tablename;`quote);
@@ -27,7 +28,7 @@ maketaqparams:{
               where null ticktime});
         (`date;.z.d)
     );
-    nbboparams::defaults,(!) . flip (
+    nbboparams:defaults,(!) . flip (
         (`headers;`ticktime`exch`sym`bid`bidsize`ask`asksize`cond`sequence`bbo`qbbo`cqs`qcond`bbex`bbprice`bbsize`bbmmid`baex`baprice`basize`bammid`luldind`nbboind`parttime);
         (`types;"JSSFIFISJCC  CCCFI*CFI*CC J");
         (`tablename;`nbbo);
@@ -44,6 +45,7 @@ maketaqparams:{
 	        where null ticktime});
         (`date;.z.d)
     );
+    fileparams::`trade`quote`nbbo!(tradeparams;quoteparams;nbboparams)
   }
 
 emptytaqschema:{

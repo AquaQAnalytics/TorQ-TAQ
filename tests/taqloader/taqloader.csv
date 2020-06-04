@@ -23,7 +23,17 @@ before,0,,q,"filetoloadq5:`EQY_US_ALL_NBBO_20180306.gz",1,0,define filetoload fo
 before,0,,q,"filepathq5:hsym`$getenv[`KDBTESTS],"/taqfiles/EQY_US_ALL_NBBO_20180306.gz"",1,0,define filepath for quote with an incorrect date
 before,0,,q,"loadidq5:5",1,0,define loadid
 before,0,,q,"quoteparA:`$"quoteA/2018.01.03/quote"",1,0,define c as quote partition
-before,0,,q,"taqloaderparams:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq1;filepathq1;loadidq1)"
-run,0,,q,"result1:loadtaqfile[taqloaderparams;optionalparams]",0,0, run loader function for correct file
-true,0,,q,"(result1 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;quoteparA];`quote;1;2018.01.03;1h;"success")",0,0,compare all results except loadendtime
-
+before,0,,q,"tradepar:`$"final/2018.03.05/trade"",1,0,define trade partition
+before,0,,q,"nbbopar:`$"final/2018.03.06/nbbo"",1,0,define nbbo partition
+before,0,,q,"taqloaderparamsq1:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq1;filepathq1;loadidq1)",1,0,define taqloaderparams
+before,0,,q,"a:"Could not find: "",1,0,define a
+before,0,,q,"b:a,.os.pth filepathq2",1,0,define b to complete path
+before,0,,q,"d:"Could not extract date in "",1,0,define d to complete path
+before,0,,q,"taqloaderparamsq2:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq2;filepathq2;loadidq2)",1,0,define taqloaderparams
+run,0,,q,"result1:loadtaqfile[taqloaderparamsq1;optionalparams]",0,0, run loader function for correct file
+run,0,,q,"result2:loadtaqfile[taqloaderparamsq2;optionalparams]",0,0, run loader function for correct file
+true,0,,q,"(result1 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;quoteparA];`quote;1;2018.01.03;1h;"success")",0,0,compare all results except loadendtimehdbdi
+true,0,,q,"(result2 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(`;`quote;2;2018.01.03;0h;b)",0,0,compare all results except loadendtime
+true,0,,q,"(result3 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(`;`quote;3;0Nd;0h;d,string filetoloadq3)",0,0,compare all results except loadendtime
+true,0,,q,"(result4 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;tradepar];`trade;4;2018.03.05;1h;"")",0,0,compare results for trade file
+true,0,,q,"(result5 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;nbbopar];`nbbo;5;2018.03.06;1h;"")",0,0,compare results for nbbo file

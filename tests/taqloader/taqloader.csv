@@ -33,6 +33,11 @@ before,0,,q,"taqloaderparamsq5:`filetype`filetoload`filepath`loadid!(filetypen;f
 before,0,,q,"a:"Could not find: "",1,0,define a
 before,0,,q,"b:a,.os.pth filepathq2",1,0,define b to complete path
 before,0,,q,"d:"Could not extract date in "",1,0,define d to complete path
+run,0,,q,"ltfresult1:loadtaqfile[taqloaderparamsq1;optionalparams]",0,0, run loader function for correct file
+run,0,,q,"ltfresult2:loadtaqfile[taqloaderparamsq2;optionalparams]",0,0, run loader function for file that does not exist
+run,0,,q,"ltfresult3:loadtaqfile[taqloaderparamsq3;optionalparams]",0,0, run loader function for incorrect date
+run,0,,q,"ltfresult4:loadtaqfile[taqloaderparamsq4;optionalparams]",0,0, run loader function for correct file
+run,0,,q,"ltfresult5:loadtaqfile[taqloaderparamsq5;optionalparams]",0,0, run loader function for correct file
 true,0,,q,"(ltfresult1 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;quoteparA];`quote;1;2018.01.03;1h;"success")",0,0,compare all results except loadendtimehdbdi
 true,0,,q,"(ltfresult2 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(`;`quote;2;2018.01.03;0h;b)",0,0,compare all results except loadendtime
 true,0,,q,"(ltfresult3 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(`;`quote;3;0Nd;0h;d,string filetoloadq3)",0,0,compare all results except loadendtime

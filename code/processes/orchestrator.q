@@ -1,4 +1,5 @@
 optionalparams:@[value;`optionalparams;()!()]
+loadfiles:@[value;`loadfiles;`trade`quote`nbbo]
 forceload:@[value;`forceload;0b]
 .servers.CONNECTIONS:enlist `gateway
 .servers.startup[]
@@ -12,10 +13,12 @@ fileloading:(
     split:`symbol$();
     loadstarttime:`timestamp$();
     loadendtime:`timestamp$();
+    loadstatus:`short$();
+    loadmessage:();
     mergestarttime:`timestamp$();
     mergeendtime:`timestamp$();
-    loadstatus:`short$();
-    message:()
+    mergestatus:`boolean$();
+    mergemessage:()
     );
 
 mergecomplete:0b;
@@ -31,15 +34,14 @@ startload:{
 
 // update record that file has been loaded
 finishload:{[q;r]
-    res2::r;
     // if taqloader isn't available, error is returned and r is a string with connection error 
     if[10=type r;
-        fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`message;:;(.proc.cp[];0h;r)];
+        fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`loadmessage;:;(.proc.cp[];0h;r)];
         .lg.o[`finishload;r];:()];
     // updated monitoring stats
-    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`loadendtime`loadstatus`message;:;(r[`loadendtime];r[`loadstatus];r[`message])];
+    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`loadendtime`loadstatus`loadmessage;:;(r[`loadendtime];r[`loadstatus];r[`loadmessage])];
     // if filetype is a quote invoke merger here
-    if[(r[`tabletype]~`quote) and ""~r[`message];
+    if[(r[`tabletype]~`quote) and "success"~r[`loadmessage];
         fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergestarttime;:;.proc.cp[]];
         h:.servers.getserverbytype[`gateway;`w;`any];
         (neg h)(`.gw.asyncexecjpt;(`mergesplit;4#r);`qmerger;{x};`finishmerge;0Wn)];
@@ -48,8 +50,9 @@ finishload:{[q;r]
   };
 
 finishmerge:{[q;r]
-    res::r;
-    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime;:;.proc.cp[]];
+    if[10=type r;
+        fileloading[loadid]:@[fileloading[loadid];`mergeendtime`mergestatus`mergemessage;:;(.proc.cp[];0h;r)];:()];
+    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime`mergestatus`mergemessage;:;(r[`mergeendtime];r[`mergestatus];r[`mergemessage])];
     if[1b~r[`fullmergestatus];mergecomplete::1b];
     // if trade and nbbo are finished before quotes, movetohdb called here
     if[mergecomplete and 2=sum exec loadstatus from fileloading where loadstatus=1h,filetype in `trade`nbbo;startmovetohdb[r[`tabledate]]];
@@ -80,11 +83,31 @@ runload:{[path;file]
         file like "*SPLITS*";`quote;
         file like "*NBBO*";`nbbo;
         [.lg.e[`fifoloader;errmsg:(string file)," is an unknown or unsupported file type"];'errmsg]];
+    if[not filetype in loadfiles; .lg.o[`runload;"Filetype ", string filetype, "has not been chosen to be loaded"]; :()];
     // update monitoring table
-    startload[`$file;filetype];  // defines loadid globally 
+    startload[`$file;filetype];  // defines loadid globally
+    // define dictionary to send to loader
+    taqloaderparams:`filetype`filetoload`filepath`loadid!(filetype;`$file;filepath;loadid);
     // open handle to gateway
     h:.servers.getserverbytype[`gateway;`w;`any];
     // async call to gw to invoke loader process to load file
     .lg.o[`runload;"Initiating loader process"];
-    (neg h)(`.gw.asyncexecjpt; (`loadtaqfile;filetype;`$file;filepath;loadid;optionalparams);`taqloader;{x};`finishload;0Wn);
+    (neg h)(`.gw.asyncexecjpt; (`loadtaqfile;taqloaderparams;optionalparams);`taqloader;{x};`finishload;0Wn);
   };
+
+// function to manually move data to hdb, filetype must be one of `trade`quote`nbbo
+manualmovetohdb:{[date;filetype]
+    h:.servers.getserverbytype[`gateway;`w;`any];
+        .lg.o[`startmovetohdb;"Moving ",(string filetype), " to hdb"]
+        (neg h)(`.gw.asyncexecjpt;(`manmovetohdb;date;filetype);`qmerger;{x};`finishmovetohdb;0Wn)
+  };
+
+// function which makes empty schema for tables that are not selected for download
+makeemptyschema:{
+    f:`trade`quote`nbbo;
+    a:f except loadfiles; 
+    trade:([] ticktime:`timestamp$();exch:`symbol$();sym:`symbol$();cond:`symbol$();size:`int$();price:`float$();stop:`boolean$();corr:`int$();sequence:`long$();tradeid:`int$();cts:`char$();trf:`char$();parttime:`timestamp$());
+    quote:([] ticktime:`timestamp$();exch:`symbol$();sym:`symbol$();bid:`float$();bidsize:`int$();ask:`float$()asksize:`int$();cond:`symbol$();sequence:`long$();bbo:`char$();qbbo:`char$();cqs:`char;rpi:`char$();shortsale:`char$();utpind:`char$();parttime:`timestamp$());
+    nbbo:([]  ticktime:`timestamp$();exch:`char$();sym:`char$();bid:`float$();bidsize:`int$();ask:`float$();asksize:`int$();cond:`char$();sequence:`long$();bbo:`char$();qbbo:`char$();cqs:`char$();qcond:`char$();bbex:`char$();bbprice:`float$();bbsize:`int$();bbmmid:`char$();baex:`char$();baprice:`float$();basize:`int$();bammid:`char$();luldind:`char$();nbboind:`char$();parttime:`timestamp$());
+    value each a
+  }

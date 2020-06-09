@@ -78,6 +78,5 @@ makeemptyschema:{[loadfiles;date]
     b set' .Q.en[symdir;]each emptyschemas[a]; // save empty schemas in tempdb, enumerates to same place 
   };
 
-
 // attempt to load merged table, create it if it doesnt exist
 merged:@[{get x};mergedir;{([date:"d"$();split:"s"$()]status:"b"$())}]

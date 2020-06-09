@@ -28,18 +28,24 @@ before,0,,q,"nbbopar:`$"final/2018.03.06/nbbo"",1,0,define nbbo partition
 before,0,,q,"taqloaderparamsq1:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq1;filepathq1;loadidq1)",1,0,define taqloaderparams for quote
 before,0,,q,"taqloaderparamsq2:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq2;filepathq2;loadidq2)",1,0,define taqloaderparams for quote
 before,0,,q,"taqloaderparamsq3:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq3;filepathq3;loadidq3)",1,0,define taqloaderparams for quote
-before,0,,q,"taqloaderparamsq4:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadt1;filepatht1;loadidqt1)",1,0,define taqloaderparams for trade
-before,0,,q,"taqloaderparamsq5:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadn1;filepathn1;loadidn1)",1,0,define taqloaderparams for nbbo
+before,0,,q,"taqloaderparamsq4:`filetype`filetoload`filepath`loadid!(filetypet;filetoloadt1;filepatht1;loadidt1)",1,0,define taqloaderparams for trade
+before,0,,q,"taqloaderparamsq5:`filetype`filetoload`filepath`loadid!(filetypen;filetoloadn1;filepathn1;loadidn1)",1,0,define taqloaderparams for nbbo
 before,0,,q,"a:"Could not find: "",1,0,define a
 before,0,,q,"b:a,.os.pth filepathq2",1,0,define b to complete path
 before,0,,q,"d:"Could not extract date in "",1,0,define d to complete path
-run,0,,q,"ltfresult1:loadtaqfile[taqloaderparamsq1;optionalparams]",0,0, run loader function for correct file
-run,0,,q,"ltfresult2:loadtaqfile[taqloaderparamsq2;optionalparams]",0,0, run loader function for correct file
-run,0,,q,"ltfresult3:loadtaqfile[taqloaderparamsq3;optionalparams]",0,0, run loader function for correct file
-run,0,,q,"ltfresult4:loadtaqfile[taqloaderparamsq4;optionalparams]",0,0, run loader function for correct file
-run,0,,q,"ltfresult5:loadtaqfile[taqloaderparamsq5;optionalparams]",0,0, run loader function for correct file
+before,0,,q,"taqloaderparamsq1:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq1;filepathq1;loadidq1)",1,0,define taqloaderparams for quote
+before,0,,q,"taqloaderparamsq2:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq2;filepathq2;loadidq2)",1,0,define taqloaderparams for quote
+before,0,,q,"taqloaderparamsq3:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadq3;filepathq3;loadidq3)",1,0,define taqloaderparams for quote
+before,0,,q,"taqloaderparamsq4:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadt1;filepatht1;loadidt1)",1,0,define taqloaderparams for trade
+before,0,,q,"taqloaderparamsq5:`filetype`filetoload`filepath`loadid!(filetypeq;filetoloadn1;filepathn1;loadidn1)",1,0,define taqloaderparams for nbbo
 true,0,,q,"(ltfresult1 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;quoteparA];`quote;1;2018.01.03;1h;"success")",0,0,compare all results except loadendtimehdbdi
 true,0,,q,"(ltfresult2 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(`;`quote;2;2018.01.03;0h;b)",0,0,compare all results except loadendtime
 true,0,,q,"(ltfresult3 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(`;`quote;3;0Nd;0h;d,string filetoloadq3)",0,0,compare all results except loadendtime
-true,0,,q,"(ltfresult4 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;tradepar];`trade;4;2018.03.05;1h;"")",0,0,compare results for trade file
-true,0,,q,"(ltfresult5 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;nbbopar];`nbbo;5;2018.03.06;1h;"")",0,0,compare results for nbbo file
+true,0,,q,"(ltfresult4 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;tradepar];`trade;4;2018.03.05;1h;"success")",0,0,compare results for trade file
+true,0,,q,"(ltfresult5 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;nbbopar];`nbbo;5;2018.03.06;1h;"success")",0,0,compare results for nbbo file
+before,0,,q,"dirs:.Q.dd[tempdb;]each `final`quoteA",1,0,define directories for final tempdb and quoteA
+true,0,,q,"`final`quoteA~key tempdb",1,0,check final tempdb and quoteA directory is made
+true,0,,q,"(`2018.03.05`2018.03.06;enlist `2018.01.03)~key each dirs",1,0,check date partitions are created 
+true,0,,q,"`trade~first key `$(string first dirs),"/2018.03.05"",1,0,check file path for trade
+true,0,,q,"`nbbo~first key `$(string first dirs),"/2018.03.06"",1,0,check file path for nbbo
+false,0,q,"`final`quoteA`quoteX~key tempdb",1,0,check incorrect quoteX was not loaded and that file does not exist

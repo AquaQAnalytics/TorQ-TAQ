@@ -110,3 +110,11 @@ here.
 **mergemessage** - if the merge encounters an error, the error message will be 
 displayed here.
 
+## Support/Manual Functions in Orchestator
+
+`manualmovetohdb` - This function can be manually called with arguments `[date;filetype]`
+in the orchestrator to manually move loaded data to the hdb. `date` is a date
+type and `filetype` is a symbol which is one of `trade`,`quote`, or `nbbo`.  By
+default, data is only moved when all data is successfully loaded and merged; 
+however, this can be called if you wish to move the data at a different point in
+time.  

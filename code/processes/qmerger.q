@@ -13,6 +13,7 @@ reset:{
 
 // base merge function
 merge:{
+  rob::x;
   .lg.o[`quotemerger;"Merging split ",string x[2]];
   x[3] upsert @[get;x[0];{[e] [.lg.e[`merge;errmsg:"Failed merge:",e];'splitnonexistant]}];
   .lg.o[`quotemerger;string[x[2]]," merged"];
@@ -22,6 +23,7 @@ merge:{
 
 // quote merge function
 mergesplit:{
+  rob2::x;
   pardir:` sv tempdbdir,`final, `$string x[`tabledate];
   quotedir:` sv pardir,`quote,`;
   // extract split letter, path of form `:/path/to/quoteA/date/table 
@@ -71,12 +73,13 @@ manmovetohdb:{[date;filetype]
 makeemptyschema:{[loadfiles;date]
     symdir:hsym`$getenv[`KDBHDB];
     pardir:` sv tempdbdir,`final, `$string date;
-    f:`trade`quote`nbbo;
-    a:f except loadfiles;
+    ftypes:`trade`quote`nbbo;
+    emptyfiles:ftypes except loadfiles;
     emptytaqschema[]; 
-    b:.Q.dd[pardir]each a,'`;
-    b set' .Q.en[symdir;]each emptyschemas[a]; // save empty schemas in tempdb, enumerates to same place 
+    paths:.Q.dd[pardir]each a,'`;
+    paths set' .Q.en[symdir;]each emptyschemas[emptyfiles]; // save empty schemas in tempdb, enumerates to same place 
   };
+
 
 // attempt to load merged table, create it if it doesnt exist
 merged:@[{get x};mergedir;{([date:"d"$();split:"s"$()]status:"b"$())}]

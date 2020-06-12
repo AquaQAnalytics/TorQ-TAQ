@@ -1,8 +1,12 @@
 action,ms,bytes,lang,code,repeat,minver,comment
 before,0,,q,"hdbdir:hsym`$getenv[`KDBHDB]",1,0,set hdb env
 before,0,,q,"symdir:hsym`$getenv[`KDBHDB]",1,0,set sym env
-before,0,,q,"tempdb:hsym`$getenv[`TORQTAQTEMPDB]",1,0,set tempdb env
-before,0,,q,"filedrop:hsym`$getenv[`KDBTESTS],"/taqfiles/"",1,0,set tempdb env
+before,0,,q,"tempdb:hsym`$getenv[`KDBTESTS],"/tempdb"",1,0,set tempdb env
+before,0,,q,"dbcheck:`final in key[tempdb]"
+before,0,,q,"rm:"rm -r "",1,0,test
+before,0,,q,"rmfinal:$[dbcheck;(rm),(.os.pth tempdb),"/final";()]",1,0,remove data if it exists in test tempdb
+before,0,,q,"system[rmfinal]",1,0,remove data if it exists in test tempdb
+before,0,,q,"filedrop:hsym`$getenv[`KDBTESTS],"/taqfiles/"",1,0,set filedrop env
 before,0,,q,"filetypeq:`quote",1,0,define quote filetype
 before,0,,q,"filetypet:`trade",1,0,define trade filetype
 before,0,,q,"filetypen:`nbbo",1,0,define nbbo filetype
@@ -34,10 +38,6 @@ before,0,,q,"a:"Could not find: "",1,0,define a
 before,0,,q,"b:a,.os.pth filepathq2",1,0,define b to complete path
 before,0,,q,"d:"Could not extract date in "",1,0,define d to complete path
 run,0,,q,"ltfresult1:loadtaqfile[taqloaderparamsq1;optionalparams]",0,0, run loader function for correct file
-run,0,,q,"ltfresult2:loadtaqfile[taqloaderparamsq2;optionalparams]",0,0, run loader function for file that does not exist
-run,0,,q,"ltfresult3:loadtaqfile[taqloaderparamsq3;optionalparams]",0,0, run loader function for incorrect date
-run,0,,q,"ltfresult4:loadtaqfile[taqloaderparamsq4;optionalparams]",0,0, run loader function for correct file
-run,0,,q,"ltfresult5:loadtaqfile[taqloaderparamsq5;optionalparams]",0,0, run loader function for correct file
 true,0,,q,"(ltfresult1 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(.Q.dd[tempdb;quoteparA];`quote;1;2018.01.03;1h;"success")",0,0,compare all results except loadendtimehdbdi
 true,0,,q,"(ltfresult2 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(`;`quote;2;2018.01.03;0h;b)",0,0,compare all results except loadendtime
 true,0,,q,"(ltfresult3 _ `loadendtime)~`tablepath`tabletype`loadid`tabledate`loadstatus`loadmessage!(`;`quote;3;0Nd;0h;d,string filetoloadq3)",0,0,compare all results except loadendtime

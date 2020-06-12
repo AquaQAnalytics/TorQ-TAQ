@@ -118,3 +118,11 @@ type and `filetype` is a symbol which is one of `trade`,`quote`, or `nbbo`.  By
 default, data is only moved when all data is successfully loaded and merged; 
 however, this can be called if you wish to move the data at a different point in
 time.  
+
+## Running Tests
+
+In the TorQ-TAQ `tests` directory you will find the relevant k4unit tests made for each TorQ-TAQ process.  To run each of these tests, run the following code in the command line:
+
+- TAQ Loader Tests: `q torq.q -load code/processes/taqloader.q -proctype taqloader -procname taqloader1 -test tests/taqloader -debug`
+- Merger Tests: `q torq.q -load code/processes/qmerger.q -proctype qmerger -procname qmerger1 -test tests/qmerger -debug`
+- Orchestrator Tests: `q torq.q -load code/processes/orchestrator.q -proctype orchestrator -procname orchestrator1 -test tests/orchestrator -debug`

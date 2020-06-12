@@ -10,12 +10,60 @@ To install TorQ-TAQ, grab the code from the repo [here](https://github.com/AquaQ
 Then, if you want to test the functionality of TorQ-TAQ, you can download some
 dummy data directly from the NYSE website [here](ftp://ftp.nyxdata.com/Historical%20Data%20Samples/Daily%20TAQ%20Sample%202018/).
 
+## Configuration Settings
+Each of the processes available in TorQ-TAQ contain configurable settings in the
+`appconfig/settings` directory. Listed below are the settings which are configurable
+for each TorQ-TAQ process and their purpose:
+
+### Orchestrator
+
+`optionalparams` - a dictionary which contains any optional parameters you might
+use for the taqloader function.
+
+`loadfiles` - a list of symbols containing the files you are interested in.
+These must be any of `trade`,`quote`,or `nbbo`.  File types not listed here
+will not be loaded by the TAQ loader.
+
+`forceload` - a booleon variable indicating whether you will let the loader
+process reload a file even though it has already been successfully loaded as 
+indicated in the `fileloading` table in the orchestrator.  This can be set in the
+configuration file in `appconfig/settings/orchestrator.q` or overwritten in the 
+q process
+
+### TAQ Loader
+
+`hdbdir` - the directory of the hdb in your TorQ stack.  All loaded data will 
+be sent here upon completion.
+
+`symdir` - the directory which the loaded data will be enumerated against.  
+By default this will be the hdb, but can be adjusted as necessary.
+
+`tempdb` - the temporary directory the data is sent to upon loading.  As the data
+is loaded and merged, it is first loaded into this directory. The data will only
+move to the hdb when all files have been successfully loaded, unless manually sent
+by the `manualmovetodhb` function defined in the orchestrator which is documented
+below.
+
+`filedrop` - the directory that the orchestrator checks for new NYSE TAQ files.
+If a TAQ file is moved to this directory, the orchestrator will invoke a loader
+process and load the file accordingly.
+
+### Merger
+
+`hdbdir` - this should be the same as the TAQ Loader `hdbdir`.
+
+`tempdb` - this should be the same as the TAQ Loader `tempdb`.
+
+`mergedir` - location of the merged table containing the quote split files that 
+have been successfully merged.
+
+## Running TorQ-TAQ
 TorQ-TAQ contains a directory called `filedrop`. You may move or copy the TAQ
 files that you downloaded from the NYSE website to this directory.  Once the 
 files have been moved here. You may start the stack by running `./torq.sh start all`
 in the command line.  This command will start all processes, including the
 orchestrator which will detect the new files in `filedrop` and invoke some
-loader processes.  
+loader processes.
 
 ## Checking Monitoring Statistics
 If you wish to see the monitoring statistics located in the orchestrator
@@ -32,27 +80,33 @@ loadid| filename                        filetype split loadstarttime            
 
 Though most of the fields' meanings are obvious, a description of each are:
 
-**loadid** - The unique ID for each load attempt
+**loadid** - The unique ID for each load attempt.
 
-**filename** - The name of the .gz file to be loaded
+**filename** - The name of the .gz file to be loaded.
 
-**filetype** - type of file, i.e. trade, quote, or nbbo
+**filetype** - type of file, i.e. trade, quote, or nbbo.
 
-**split** - if the file is a quote, the split letter will be displayed here
+**split** - if the file is a quote, the split letter will be displayed here.
 
-**loadstarttime** - the time the load started
+**loadstarttime** - the time the load started.
 
-**loadendtime** - the time at which the load completed
+**loadendtime** - the time at which the load completed.
 
-**loadstatus** - binary indicator showing if load was successful or not.  1 indicates the load was successful and 0 indicates it was not successful.
+**loadstatus** - binary indicator showing if load was successful or not.  1 
+indicates the load was successful and 0 indicates it was not successful.
 
-**loadmessage** - if the load was successful, this will contain the string `"success"`.  If the load encountered an error at any point, the error is caught and displayed here as a string.
+**loadmessage** - if the load was successful, this will contain the string 
+`"success"`.  If the load encountered an error at any point, the error is caught
+and displayed here as a string.
 
-**mergestarttime** - if the file is quote, the start of the merge will be displayed here
+**mergestarttime** - if the file is quote, the start of the merge will be displayed
+here.
 
-**mergeendtime** - the time the merge of the split file is completed
+**mergeendtime** - the time the merge of the split file is completed.
 
-**mergestatus** - binary indicator showing if the merge was successful or not.  1 indicates the merge was successful and 0 indicates it was not successful.
+**mergestatus** - binary indicator showing if the merge was successful or not.
+1 indicates the merge was successful and 0 indicates it was not successful.
 
-**mergemessage** - if the merge encounters an error, the error message will be displayed here.
+**mergemessage** - if the merge encounters an error, the error message will be 
+displayed here.
 

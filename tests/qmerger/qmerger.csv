@@ -1,8 +1,8 @@
 action,ms,bytes,lang,code,repeat,minver,comment
-before,0,,q,"hdbdir:hsym`$getenv[`KDBHDB]",1,0,set hdb env
-before,0,,q,"symdir:hsym`$getenv[`KDBHDB]",1,0,set sym env
+before,0,,q,"hdbdir:hsym`$getenv[`KDBTESTS],"/hdb"",1,0,set hdb env
+before,0,,q,"symdir:hsym`$getenv[`KDBTESTS],"/hdb"",1,0,set sym env
 before,0,,q,"tempdbdir:hsym`$getenv[`KDBTESTS],"/tempdb"",1,0,set tempdb env
-before,0,,q,"mergedir:hsym `$getenv[`TORQTAQMERGED]",1,0,set mergedir env
+before,0,,q,"mergedir:hsym `$getenv[`KDBTESTS],"/merged"",1,0,set mergedir env
 before,0,,q,"pardir:` sv tempdbdir,`final, `$string 2018.01.01",1,0,define pardir
 before,0,,q,"quotedir:` sv pardir,`quote,`",1,0,define quotedir
 before,0,,q,"resetparams:`tabledate`tablepath!(2018.01.01;hsym`$getenv[`KDBTESTS],"/tempdb/quoteA/2018.01.03/quote/")",1,0,define reset params
@@ -11,4 +11,4 @@ true,0,,q,"`2018.01.01 in key .Q.dd[tempdbdir;`final]",1,0,check that correct da
 before,0,,q,"mergesplitparams:`tabledate`tablepath`loadid!(2018.01.01;hsym`$getenv[`KDBTESTS],"/tempdb/quoteA/2018.01.03/quote";1)",1,0,define mergesplit params
 run,0,,q,"mergesplit[mergesplitparams]",1,0,run mergesplit function
 run,0,,q,"makeemptyschema[`trade;2018.01.01]",1,0,call makeemptyschema function
-true,0,,q,"`nbbo`quote in key[`$string[tempdbdir],"/2018.01.01"]",1,0,check that nbbo and quote schema have been made
+true,0,,q,"`nbbo`quote in key[`$string[tempdbdir],"/final/2018.01.01"]",1,0,check that nbbo and quote schema have been made

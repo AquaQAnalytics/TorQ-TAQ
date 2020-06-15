@@ -66,7 +66,7 @@ movepartohdb:{[date;loadfiles]
 manmovetohdb:{[date;filetype]
   pardir:` sv tempdbdir,`final, `$string date, `$string filetype;
   .lg.o[`manmovetohdb;"Manually moving data in ",(.os.pth pardir)," to hdb"];
-  syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),string date];
+  syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),"/",string date];
   .lg.o[`manmovetohdb;"successfully moved data to hdb"];
   };
 

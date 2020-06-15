@@ -138,4 +138,6 @@ as listed earlier; make sure to download the following files to `tests/taqfiles`
 - Orchestrator Tests: `q torq.q -load code/processes/orchestrator.q -proctype orchestrator -procname orchestrator1 -test tests/orchestrator -debug`
 
 ### TAQ Loader Tests
-The tests in the TAQ loader will test each function within the `taqloader.q` file which involves loading data from each type of file (trade, quote, nbbo).  Because of this, the test directory will have its own test hdb and tempdb.
+The tests in the TAQ loader will test each function within the `taqloader.q`
+file which involves loading data from each type of file (trade, quote, nbbo).
+Because of this, the test directory will have its own test hdb and tempdb.

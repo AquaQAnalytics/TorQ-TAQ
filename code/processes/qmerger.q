@@ -47,7 +47,7 @@ mergesplit:{
   // build return dictionary
   b:`=(merged?0b)[`split];
   returnkeys:`loadid`mergelocation`fullmergestatus;
-  return:result,returnkeys!(x[`loadid];quotedir;b)
+  return::result,returnkeys!(x[`loadid];quotedir;b)
   };
 
 // move merged quotes to date partition in hdb
@@ -65,18 +65,19 @@ movepartohdb:{[date;loadfiles]
 
 manmovetohdb:{[date;filetype]
   pardir:` sv tempdbdir,`final, `$string date, `$string filetype;
+  .lg.o[`manmovetohdb;"Manually moving data in ",(.os.pth pardir)," to hdb"];
   syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),string date];
+  .lg.o[`manmovetohdb;"successfully moved data to hdb"];
   };
 
 // function which makes empty schema for tables that are not selected for download
 makeemptyschema:{[loadfiles;date]
-    symdir:hdbdir;
-    pardir:` sv tempdbdir,`final, `$string date;
-    ftypes:`trade`quote`nbbo;
-    emptyfiles:ftypes except loadfiles;
-    emptytaqschema[]; 
-    paths:.Q.dd[pardir]each emptyfiles,'`;
-    paths set' .Q.en[symdir;]each emptyschemas[emptyfiles]; // save empty schemas in tempdb, enumerates to same place 
+  pardir:` sv tempdbdir,`final, `$string date;
+  ftypes:`trade`quote`nbbo;
+  emptyfiles:ftypes except loadfiles;
+  emptytaqschema[];                                        // located in code/common/taq.q
+  paths:.Q.dd[pardir]each emptyfiles,'`;
+  paths set' .Q.en[symdir;]each emptyschemas[emptyfiles];  // save empty schemas in tempdb, enumerates to same place 
   };
 
 

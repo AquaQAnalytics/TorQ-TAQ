@@ -11,4 +11,4 @@ true,0,,q,"`2018.01.01 in key .Q.dd[tempdbdir;`final]",1,0,check that correct da
 before,0,,q,"mergesplitparams:`tabledate`tablepath`loadid!(2018.01.01;hsym`$getenv[`KDBTESTS],"/tempdb/quoteA/2018.01.03/quote";1)",1,0,define mergesplit params
 run,0,,q,"mergesplit[mergesplitparams]",1,0,run mergesplit function
 run,0,,q,"makeemptyschema[`trade;2018.01.01]",1,0,call makeemptyschema function
-true,0,,q,"`nbbo`quote in key[`$string[tempdbdir],"/final/2018.01.01"]",1,0,check that nbbo and quote schema have been made
+true,0,,q,"all `nbbo`quote in key[`$string[tempdbdir],"/final/2018.01.01"]",1,0,check that nbbo and quote schema have been made

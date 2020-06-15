@@ -121,8 +121,21 @@ time.
 
 ## Running Tests
 
-In the TorQ-TAQ `tests` directory you will find the relevant k4unit tests made for each TorQ-TAQ process.  To run each of these tests, run the following code in the command line:
+In the TorQ-TAQ `tests` directory you will find the relevant k4unit tests made 
+for each TorQ-TAQ process.  To run each of these tests, run the code below in 
+the command line.  It is important to note that you should run the TAQ Loader 
+tests first, and then the merger tests second.  This is because the functionality 
+of the merger is dependent on files being loaded using the loader process in the first place. Also, 
+make sure to download the sample data [here](ftp://ftp.nyxdata.com/Historical%20Data%20Samples/Daily%20TAQ%20Sample%202018/) 
+as listed earlier; make sure to download the following files to `tests/taqfiles`:
+
+- `EQY_US_ALL_NBBO_20180306.gz`
+- `EQY_US_ALL_TRADE_20180305.gz`
+- `SPLITS_US_ALL_BBO_A_20180103.gz`
 
 - TAQ Loader Tests: `q torq.q -load code/processes/taqloader.q -proctype taqloader -procname taqloader1 -test tests/taqloader -debug`
 - Merger Tests: `q torq.q -load code/processes/qmerger.q -proctype qmerger -procname qmerger1 -test tests/qmerger -debug`
 - Orchestrator Tests: `q torq.q -load code/processes/orchestrator.q -proctype orchestrator -procname orchestrator1 -test tests/orchestrator -debug`
+
+### TAQ Loader Tests
+The tests in the TAQ loader will test each function within the `taqloader.q` file which involves loading data from each type of file (trade, quote, nbbo).  Because of this, the test directory will have its own test hdb and tempdb.

@@ -1,4 +1,5 @@
 hdbdir:@[value;`hdbdir;`:hdb]
+symdir:@[value;`symdir;`:symdir]
 tempdbdir:@[value;`tempdbdir;`:tempdb]
 mergedir:@[value;`mergedir;`:mergedir]
 
@@ -46,7 +47,7 @@ mergesplit:{
   // build return dictionary
   b:`=(merged?0b)[`split];
   returnkeys:`loadid`mergelocation`fullmergestatus;
-  return:result,returnkeys!(x[`loadid];quotedir;b)
+  return::result,returnkeys!(x[`loadid];quotedir;b)
   };
 
 // move merged quotes to date partition in hdb
@@ -58,32 +59,27 @@ movepartohdb:{[date;loadfiles]
   .lg.o[`quotemerger;"quote data moved to hdb"];
   .lg.o[`quotemerger;"clearing ",string date, " from temporary database"];
   syscmd["rm -r ",string pardir];
-<<<<<<< HEAD
   .lg.o[`quotemerger;"temporary db cleared"];
-=======
-  .lg.0[`quotemerger;"temporary db cleared"];
-<<<<<<< HEAD
->>>>>>> test movetohdb output
-=======
->>>>>>> 917d23a54b8ce5b7acceb9e0a928d9079db280c1
   :1b
   };
 
 manmovetohdb:{[date;filetype]
   pardir:` sv tempdbdir,`final, `$string date, `$string filetype;
-  syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),string date];
+  .lg.o[`manmovetohdb;"Manually moving data in ",(.os.pth pardir)," to hdb"];
+  syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),"/",string date];
+  .lg.o[`manmovetohdb;"successfully moved data to hdb"];
   };
 
 // function which makes empty schema for tables that are not selected for download
-makeemptyschema:{[loadfiles;pardir]
-    pardir:` sv tempdbdir,`final, `$string date;
-    f:`trade`quote`nbbo;
-    a:f except loadfiles;
-    emptytaqschema[]; 
-    b:.Q.dd[pardir]each a,'`;
-  // need to save empty schemas in tempdb/final, will add soon
-  // this will be called in moveparttohdb, empty schemas will be made for files not in loadfiles variable
+makeemptyschema:{[loadfiles;date]
+  pardir:` sv tempdbdir,`final, `$string date;
+  ftypes:`trade`quote`nbbo;
+  emptyfiles:ftypes except loadfiles;
+  emptytaqschema[];                                        // located in code/common/taq.q
+  paths:.Q.dd[pardir]each emptyfiles,'`;
+  paths set' .Q.en[symdir;]each emptyschemas[emptyfiles];  // save empty schemas in tempdb, enumerates to same place 
   };
+
 
 // attempt to load merged table, create it if it doesnt exist
 merged:@[{get x};mergedir;{([date:"d"$();split:"s"$()]status:"b"$())}]

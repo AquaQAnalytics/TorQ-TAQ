@@ -1,18 +1,19 @@
-﻿action,ms,bytes,lang,code,repeat,minver,comment,
-before,0,,q,"hdbdir:hsym`$getenv[`KDBHDB],"/" ",1,0,set hdb env ,
-before,0,,q,tempdbdir:hsym `$getenv[`TORQTAQTEMPDB],1,0,set tempdb env ,
-before,0,,q,mergedir:hsym `$getenv[`TORQTAQMERGED],1,0,set merge env,
-before,0,,q,testdir:hsym`$getenv[`KDBTESTS],1,0,set test env,
-before,0,,q,input1:`tablepath`tabletype`loadid`tabledate!(`$"/" sv (string testdir;"quoteB";"2020.01.03";"quote");`quote;1;2018.01.03),1,0,set correct input,
-before,0,,q,input2:`tablepath`tabletype`loadid`tabledate!(`$"/" sv (string testdir;"quoteA";"2020.01.03";"quote");1;2018.01.03),1,0,set 'splitnonexistant' input,
-before,0,,q,input3:`tablepath`tabletype`loadid`tabledate!("/" sv (string testdir;"quoteB";"2020.01.03";"quote");`quote;1;2018.01.03),1,0,set 'type' error input,
-run,0,,q,result1:mergesplit input1,0,0,run merge function,
-run,0,,q,result2:mergesplit input2,0,0,run merge function,
-run,0,,q,result3:mergesplit input3,0,0,run merge function,
-true,0,,q,(raze value type each result)~(-1 10 -12 -7 -11 -1h),0,0,compare result types,
-true,0,,q,result1[`mergestatus]=1b,0,0,check merge was successful,
-true,0,,q,result2[`mergemessage]="Unsuccessful: splitnonexistant",0,0,check error mergemessage,
-true,0,,q,result3[`mergemessage]="Unsuccessful: type",0,0,check error mergemessage,
-run,0,,q,result4:movetohdb 2018.01.03,0,0,run move to hdb function,
-true,0,,q,result4~1b,0,0,check movetohdb result,
-fail,0,,q,movetohdb .z.d,0,0,check moving wrond date,
+action,ms,bytes,lang,code,repeat,minver,comment
+before,0,,q,"hdbdir:hsym`$getenv[`KDBTESTS],"/hdb"",1,0,set hdb env
+before,0,,q,"symdir:hsym`$getenv[`KDBTESTS],"/hdb"",1,0,set sym env
+before,0,,q,"tempdbdir:hsym`$getenv[`KDBTESTS],"/tempdb"",1,0,set tempdb env
+before,0,,q,"mergedir:hsym `$getenv[`KDBTESTS],"/merged"",1,0,set mergedir env
+before,0,,q,"pardir:` sv tempdbdir,`final, `$string 2018.01.01",1,0,define pardir
+before,0,,q,"quotedir:` sv pardir,`quote,`",1,0,define quotedir
+before,0,,q,"resetparams:`tabledate`tablepath!(2018.01.01;hsym`$getenv[`KDBTESTS],"/tempdb/quoteA/2018.01.03/quote/")",1,0,define reset params
+run,0,,q,"reset[resetparams;quotedir]",1,0,call reset function
+true,0,,q,"`2018.01.01 in key .Q.dd[tempdbdir;`final]",1,0,check that correct date partition has been created
+before,0,,q,"mergesplitparams:`tabledate`tablepath`loadid!(2018.01.01;hsym`$getenv[`KDBTESTS],"/tempdb/quoteA/2018.01.03/quote";1)",1,0,define mergesplit params
+run,0,,q,"mergesplit[mergesplitparams]",1,0,run mergesplit function
+run,0,,q,"makeemptyschema[`trade;2018.01.01]",1,0,call makeemptyschema function
+run,0,,q,"makeemptyschema[`quote`nbbo;2018.05.05]",1,0,call makeemptyschema with multiple tables
+true,0,,q,"all `nbbo`quote in key[`$string[tempdbdir],"/final/2018.01.01"]",1,0,check that nbbo and quote schema have been made
+run,0,,q,"movepartohdb[2018.01.01;`quote]",1,0,move date partition to hdb
+true,0,,q,"all `nbbo`quote`sym in key[string[hdbdir],"/2018.01.01"]",1,0,check that tables have been moved to hdb and that sym file exists in correct location
+run,0,,q,"manmovetohdb[2018.05.05;`trade]",1,0,run manual move to hdb function
+true,0,,q,"`trade in key[string[hdbdir],"/2018.05.05"]",1,0,check that manual move of nbbo table was successful

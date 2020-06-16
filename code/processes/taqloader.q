@@ -3,7 +3,6 @@ symdir:@[value;`symdir;`:symdir]
 tempdb:@[value;`tempdb;`:tempdb]
 filedrop:@[value;`filedrop;`:filedrop]
 optionalparams:@[value;`optionalparams;()!()]
-defaults:`chunksize`partitioncol`partitiontype`compression`gc!(`int$100*2 xexp 20;`ticktime;`date;();0b)
 
 timeconverter:{
     "n"$sum 3600000000000 60000000000 1000000000 1*deltas[d*x div/: d]div d:10000000000000 100000000000 1000000000 1
@@ -46,9 +45,9 @@ buildreturndict:{[d;s;e]
 // function for building parameters used in loadtaqfile based on file type
 buildparams:{[ft;rd;ftl]
     p:$[
-        ft~`trade;tradeparams,optionalparams;
-        ft~`quote;quoteparams,optionalparams;
-        ft~`nbbo;nbboparams,optionalparams;
+        ft~`trade;fileparams[`trade],optionalparams;
+        ft~`quote;fileparams[`quote],optionalparams;
+        ft~`nbbo;fileparams[`nbbo],optionalparams;
         [.lg.e[`fifoloader;errmsg:(string ft)," is an unknown or unsupported file type"];
         :buildreturndict[rd;0h;errmsg]]];
     p[`dbdir]:$[

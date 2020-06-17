@@ -1,6 +1,6 @@
 hdbdir:@[value;`hdbdir;`:hdb]
 symdir:@[value;`symdir;`:symdir]
-tempdbdir:@[value;`tempdbdir;`:tempdb]
+tempdb:@[value;`tempdb;`:tempdb]
 mergedir:@[value;`mergedir;`:mergedir]
 
 // reset temp hdb and update merged table
@@ -23,7 +23,7 @@ merge:{
 
 // quote merge function
 mergesplit:{
-  pardir:` sv tempdbdir,`final, `$string x[`tabledate];
+  pardir:` sv tempdb,`final, `$string x[`tabledate];
   quotedir:` sv pardir,`quote,`;
   // extract split letter, path of form `:/path/to/quoteA/date/table 
   split:`$first vs["/";reverse string x[`tablepath]][2];
@@ -53,26 +53,27 @@ mergesplit:{
 // move merged quotes to date partition in hdb
 movepartohdb:{[date;loadfiles]
   makeemptyschema[loadfiles];
-  pardir:` sv tempdbdir,`final, `$string date;
+  pardir:` sv tempdb,`final, `$string date;
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
   syscmd[" " sv ("mv";.os.pth pardir;.os.pth hdbdir)];
   .lg.o[`quotemerger;"quote data moved to hdb"];
-  .lg.o[`quotemerger;"clearing ",string date, " from temporary database"];
-  syscmd["rm -r ",string pardir];
-  .lg.o[`quotemerger;"temporary db cleared"];
   :1b
   };
 
 manmovetohdb:{[date;filetype]
-  pardir:` sv tempdbdir,`final, `$string date, `$string filetype;
-  .lg.o[`manmovetohdb;"Manually moving data in ",(.os.pth pardir)," to hdb"];
-  syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),"/",string date];
+  ft:(),filetype;
+  pd:` sv tempdb,`final, `$string date;
+  paths:.Q.dd[pd]each ft,'`;
+  if[not (`$string[date]) in key[hdbdir];syscmd["mkdir ",(.os.pth hdbdir),"/",string[date]]];
+  .lg.o[`manmovetohdb;"Manually moving data in ",(.os.pth pd)," to hdb"];
+  cmd:({"mv ",(.os.pth x)," ",(.os.pth y),"/",string[z],"/"}[;hdbdir;date]each paths),'string[ft],'"/";
+  syscmd'[cmd];
   .lg.o[`manmovetohdb;"successfully moved data to hdb"];
   };
 
 // function which makes empty schema for tables that are not selected for download
 makeemptyschema:{[loadfiles;date]
-  pardir:` sv tempdbdir,`final, `$string date;
+  pardir:` sv tempdb,`final, `$string date;
   ftypes:`trade`quote`nbbo;
   emptyfiles:ftypes except loadfiles;
   emptytaqschema[];                                        // located in code/common/taq.q

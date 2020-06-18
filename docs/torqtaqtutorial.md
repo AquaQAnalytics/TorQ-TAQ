@@ -46,7 +46,7 @@ Additionally, TorQ has a `setenv.sh` file which contains all of the environment 
 The orchestrator process maintains monitoring statistics. To view these, open a handle to this process and check the `fileloading` table.  You may open a handle using `qcon` in the command line or open a q process and open a handle using:
 
 ```
-$~ qcon :portnumber:user:pass
+$ qcon :portnumber:user:pass
 q)h:hopen`::portnumber:user:pass
 ```
 

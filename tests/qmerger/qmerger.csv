@@ -5,7 +5,10 @@ before,0,,q,"tempdb:hsym`$getenv[`KDBTESTS],""/tempdb""",1,0,set tempdb env
 before,0,,q,"mergedir:hsym `$getenv[`KDBTESTS],""/merged""",1,0,set mergedir env
 before,0,,q,"pardir:` sv tempdb,`final, `$string 2018.01.01",1,0,define pardir
 before,0,,q,"quotedir:` sv pardir,`quote,`",1,0,define quotedir
-before,0,,q,"datacheck:1b",1,0,check that necessary data for tests exist before continuing
+before,0,,q,"datacheck:`quoteA in key[tempdb]",1,0,check that necessary data for tests exist before continuing
+before,0,,q,"if[not datacheck;.lg.o[`qmergertest;""quoateA was not found, exiting""];exit 0]",1,0,check that necessary data for tests exist before continuing
+before,0,,q,"datecheck:`2018.01.01`2018.01.02`2018.05.05",1,0,get dates to check if they already exist
+before,0,,q,"{if[x in key[hdbdir];system""rm -r "",string x]}each datecheck",1,0,remove date partitions if they already exist from running test before
 before,0,,q,"",1,0,make sure hdb date partitions do not exist yet
 before,0,,q,"resetparams:`tabledate`tablepath!(2018.01.01;hsym`$getenv[`KDBTESTS],""/tempdb/quoteA/2018.01.03/quote/"")",1,0,define reset params
 run,0,,q,"reset[resetparams;quotedir]",1,0,call reset function

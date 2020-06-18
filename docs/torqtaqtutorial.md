@@ -40,8 +40,15 @@ the orchestrator (see [Checking Monitoring Statistics](#Checking-Monitoring-Stat
 ## Running TorQ-TAQ
 TorQ-TAQ contains a directory called `filedrop`. TAQ files downloaded from the NYSE website can be moved to this directory. The stack is then initiated by running `./torq.sh start all` in the command line from the deploy directory, which will start all processes. The orchestrator process will detect the new files in `filedrop` and invoke the appropriate loader processes.
 
+Additionally, TorQ has a `setenv.sh` file which contains all of the environment variables used in TorQ-TAQ.  Instructions on setting this up can be found [here](https://aquaqanalytics.github.io/TorQ/gettingstarted/)
+
 ## Checking Monitoring Statistics
-The orchestrator process maintains monitoring statistics. To view these, open a handle to this process and check the `fileloading` table.
+The orchestrator process maintains monitoring statistics. To view these, open a handle to this process and check the `fileloading` table.  You may open a handle using `qcon` in the command line or open a q process and open a handle using:
+
+```
+$~ qcon :portnumber:user:pass
+q)h:hopen`::portnumber:user:pass
+```
 
 An example of what this table might look like:
 
@@ -88,7 +95,7 @@ A description of each of the `fileloading` fields is given below:
 
 The TorQ-TAQ `tests` directory contains the relevant k4unit tests made for each TorQ-TAQ process.  To run each of these tests, run the code below in the command line.  It is important to note that the TAQ Loader tests must be executed first, and then the merger tests second.  The functionality of the merger is dependent on files being loaded using the loader process, and thus it will fail if the loader has not already run. Also, make sure to download the sample data from [here](ftp://ftp.nyxdata.com/Historical%20Data%20Samples/Daily%20TAQ%20Sample%202018/) as described above. The tests require the following files to be downloaded and moved to the directory `tests/taqfiles`:
 
-- `EQY_US_ALL_NBBO_20180306.gz`
+- `EQY_US_ALL_NBBO_20180306.gz` 
 - `EQY_US_ALL_TRADE_20180305.gz`
 - `SPLITS_US_ALL_BBO_A_20180103.gz`
 
@@ -97,4 +104,6 @@ The TorQ-TAQ `tests` directory contains the relevant k4unit tests made for each 
 - Orchestrator Tests: `q torq.q -load code/processes/orchestrator.q -proctype orchestrator -procname orchestrator1 -test tests/orchestrator -debug`
 
 ### TAQ Loader Tests
-The tests in the TAQ loader will test each function within the `taqloader.q` file. The TAQ loader invokes the loading of data from each type of file (trade, quote, nbbo). Because of this, the unit test will generate a hdb and a temphdb in the test directory.
+The tests in the TAQ loader will test each function within the `taqloader.q` file. The TAQ loader invokes the loading of data from each type of file (trade, quote, nbbo). Because of this, the unit test will generate a hdb and a temphdb in the test directory. The TAQ Loader tests in `taqloader.csv` references a `SPLITS_US_ALL_BBO_X_20180103.gz` which has not been downloaded.  This is to test the functionality of the loader when the file does not exist.  A similar tests is done for a file with an incorrect date when the test references the file `SPLITS_US_ALL_BBO_A_2018010A.gz`.
+
+

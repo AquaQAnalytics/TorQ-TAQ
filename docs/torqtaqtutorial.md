@@ -101,9 +101,11 @@ The TorQ-TAQ `tests` directory contains the relevant k4unit tests made for each 
 
 - TAQ Loader Tests: `q torq.q -load code/processes/taqloader.q -proctype taqloader -procname taqloader1 -test tests/taqloader -debug`
 - Merger Tests: `q torq.q -load code/processes/qmerger.q -proctype qmerger -procname qmerger1 -test tests/qmerger -debug`
-- Orchestrator Tests: `q torq.q -load code/processes/orchestrator.q -proctype orchestrator -procname orchestrator1 -test tests/orchestrator -debug`
 
 ### TAQ Loader Tests
 The tests in the TAQ loader will test each function within the `taqloader.q` file. The TAQ loader invokes the loading of data from each type of file (trade, quote, nbbo). Because of this, the unit test will generate a hdb and a temphdb in the test directory. The TAQ Loader tests in `taqloader.csv` references a `SPLITS_US_ALL_BBO_X_20180103.gz` which has not been downloaded.  This is to test the functionality of the loader when the file does not exist.  A similar tests is done for a file with an incorrect date when the test references the file `SPLITS_US_ALL_BBO_A_2018010A.gz`.
+
+### Merger Unit Tests
+Again, it is a requirement to run the TAQ loader unit tests before running the merger unit tests as the merger needs the loaded files from the TAQ loader unit tests.
 
 

@@ -99,6 +99,8 @@ The TorQ-TAQ `tests` directory contains the relevant k4unit tests made for each 
 - `EQY_US_ALL_TRADE_20180305.gz`
 - `SPLITS_US_ALL_BBO_A_20180103.gz`
 
+Run the following lines from the `deploy/` directory where the upper level of TorQ-TAQ is located to run each of the tests.
+
 - TAQ Loader Tests: `q torq.q -load code/processes/taqloader.q -proctype taqloader -procname taqloader1 -test tests/taqloader -debug`
 - Merger Tests: `q torq.q -load code/processes/qmerger.q -proctype qmerger -procname qmerger1 -test tests/qmerger -debug`
 

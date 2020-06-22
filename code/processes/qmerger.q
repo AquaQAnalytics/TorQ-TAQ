@@ -1,7 +1,11 @@
+\d .taq
+
 hdbdir:@[value;`hdbdir;`:hdb]
 symdir:@[value;`symdir;`:symdir]
-tempdbdir:@[value;`tempdbdir;`:tempdb]
+tempdb:@[value;`tempdb;`:tempdb]
 mergedir:@[value;`mergedir;`:mergedir]
+
+\d .
 
 // reset temp hdb and update merged table
 reset:{
@@ -23,7 +27,7 @@ merge:{
 
 // quote merge function
 mergesplit:{
-  pardir:` sv tempdbdir,`final, `$string x[`tabledate];
+  pardir:` sv .taq.tempdb,`final, `$string x[`tabledate];
   quotedir:` sv pardir,`quote,`;
   // extract split letter, path of form `:/path/to/quoteA/date/table 
   split:`$first vs["/";reverse string x[`tablepath]][2];
@@ -42,7 +46,7 @@ mergesplit:{
     ];
   result:`mergestatus`mergemessage`mergeendtime!a;
   // save merged table for use in orchestrator process
-  save mergedir;
+  save .taq.mergedir;
   syscmd["rm -r ",1_"/" sv -2_vs["/";string x[`tablepath]]];
   // build return dictionary
   b:`=(merged?0b)[`split];
@@ -53,33 +57,34 @@ mergesplit:{
 // move merged quotes to date partition in hdb
 movepartohdb:{[date;loadfiles]
   makeemptyschema[loadfiles];
-  pardir:` sv tempdbdir,`final, `$string date;
+  pardir:` sv .taq.tempdb,`final, `$string date;
   .lg.o[`quotemerger;"moving merged quote data to hdb"]
-  syscmd[" " sv ("mv";.os.pth pardir;.os.pth hdbdir)];
+  syscmd[" " sv ("mv";.os.pth pardir;.os.pth .taq.hdbdir)];
   .lg.o[`quotemerger;"quote data moved to hdb"];
-  .lg.o[`quotemerger;"clearing ",string date, " from temporary database"];
-  syscmd["rm -r ",string pardir];
-  .lg.o[`quotemerger;"temporary db cleared"];
   :1b
   };
 
 manmovetohdb:{[date;filetype]
-  pardir:` sv tempdbdir,`final, `$string date, `$string filetype;
-  .lg.o[`manmovetohdb;"Manually moving data in ",(.os.pth pardir)," to hdb"];
-  syscmd["mv ",(.os.pth pardir)," ",(.os.pth hdbdir),"/",string date];
+  ft:(),filetype;
+  pd:` sv .taq.tempdb,`final, `$string date;
+  paths:.Q.dd[pd]each ft,'`;
+  if[not (`$string[date]) in key[.taq.hdbdir];syscmd["mkdir ",(.os.pth .taq.hdbdir),"/",string[date]]];
+  .lg.o[`manmovetohdb;"Manually moving data in ",(.os.pth pd)," to hdb"];
+  cmd:({"mv ",(.os.pth x)," ",(.os.pth y),"/",string[z],"/"}[;.taq.hdbdir;date]each paths),'string[ft],'"/";
+  syscmd'[cmd];
   .lg.o[`manmovetohdb;"successfully moved data to hdb"];
   };
 
 // function which makes empty schema for tables that are not selected for download
 makeemptyschema:{[loadfiles;date]
-  pardir:` sv tempdbdir,`final, `$string date;
+  pardir:` sv .taq.tempdb,`final, `$string date;
   ftypes:`trade`quote`nbbo;
   emptyfiles:ftypes except loadfiles;
-  emptytaqschema[];                                        // located in code/common/taq.q
+  emptytaqschema[];                                             // located in code/common/taq.q
   paths:.Q.dd[pardir]each emptyfiles,'`;
-  paths set' .Q.en[symdir;]each emptyschemas[emptyfiles];  // save empty schemas in tempdb, enumerates to same place 
+  paths set' .Q.en[.taq.symdir;]each emptyschemas[emptyfiles];  // save empty schemas in tempdb, enumerates to same place 
   };
 
 
 // attempt to load merged table, create it if it doesnt exist
-merged:@[{get x};mergedir;{([date:"d"$();split:"s"$()]status:"b"$())}]
+merged:@[{get x};.taq.mergedir;{([date:"d"$();split:"s"$()]status:"b"$())}]

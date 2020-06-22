@@ -101,8 +101,8 @@ The TorQ-TAQ `tests` directory contains the relevant k4unit tests made for each 
 
 Run the following lines from the `deploy/` directory where the upper level of TorQ-TAQ is located to run each of the tests.
 
-- TAQ Loader Tests: `q torq.q -load code/processes/taqloader.q -proctype taqloader -procname taqloader1 -test tests/taqloader -debug`
-- Merger Tests: `q torq.q -load code/processes/qmerger.q -proctype qmerger -procname qmerger1 -test tests/qmerger -debug`
+- TAQ Loader Tests: `./torq.sh debug taqloader1 -extras -test tests/taqloader`
+- Merger Tests: `./torq.sh debug qmerger1 -extras -test tests/qmerger`
 
 **Note:** These tests load sample data from the NYSE website, and so the time it takes to load all three files can take several minutes.  
 

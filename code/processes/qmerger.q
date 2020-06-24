@@ -51,7 +51,7 @@ mergesplit:{
   // build return dictionary
   b:`=(merged?0b)[`split];
   returnkeys:`loadid`mergelocation`fullmergestatus;
-  return::result,returnkeys!(x[`loadid];quotedir;b)
+  result,returnkeys!(x[`loadid];quotedir;b)
   };
 
 // move merged quotes to date partition in hdb

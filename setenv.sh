@@ -10,17 +10,18 @@ else
   dirpath="$(cd "$(dirname "$0")" && pwd)"
 fi
 
+
 export TORQHOME=${dirpath}
+export TORQAPPHOME=${TORQHOME}
+export TORQDATAHOME=${TORQHOME}
 export KDBCONFIG=${TORQHOME}/config
 export KDBCODE=${TORQHOME}/code
-export KDBLOG=${TORQHOME}/logs
+export KDBLOG=${TORQDATAHOME}/logs
 export KDBHTML=${TORQHOME}/html
 export KDBLIB=${TORQHOME}/lib
-export KDBHDB=${TORQHOME}/hdb
-export KDBWDB=${TORQHOME}/wdbhdb
-export KDBTPLOG=${TORQHOME}/tplogs
-export TORQTAQTEMPDB=${TORQHOME}/tempdb
-export TORQTAQMERGED=${TORQHOME}/merged
+export KDBHDB=${TORQDATAHOME}/hdb
+export TORQTAQTEMPDB=${TORQDATAHOME}}/tempdb
+export TORQTAQMERGED=${TORQDATAHOME}}/merged
 export TORQTAQFILEDROP=${TORQHOME}/filedrop
 export KBDTESTS=${TORQHOME}/tests
 # set rlwrap and qcon paths for use in torq.sh qcon flag functions

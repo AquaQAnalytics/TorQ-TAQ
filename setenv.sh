@@ -29,9 +29,9 @@ export RLWRAP="rlwrap"
 export QCON="qcon"
 
 # set the application specific configuration directory
-export KDBAPPCONFIG=${TORQHOME}/appconfig
-export KDBAPPCODE=${TORQHOME}/code
+export KDBAPPCONFIG=${TORQAPPHOME}/appconfig
+export KDBAPPCODE=${TORQAPPHOME}/code
 # set KDBBASEPORT to the default value for a TorQ Installationr
-export KDBBASEPORT=1259
+export KDBBASEPORT=1355
 # set TORQPROCESSES to the default process csv
 export TORQPROCESSES=${KDBAPPCONFIG}/process.csv

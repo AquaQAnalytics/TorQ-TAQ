@@ -22,7 +22,7 @@ export KDBLIB=${TORQHOME}/lib
 export KDBHDB=${TORQDATAHOME}/hdb
 export TORQTAQTEMPDB=${TORQDATAHOME}}/tempdb
 export TORQTAQMERGED=${TORQDATAHOME}}/merged
-export TORQTAQFILEDROP=${TORQHOME}/filedrop
+export TORQTAQFILEDROP=${TORQDATAHOME}/filedrop
 export KBDTESTS=${TORQHOME}/tests
 # set rlwrap and qcon paths for use in torq.sh qcon flag functions
 export RLWRAP="rlwrap"

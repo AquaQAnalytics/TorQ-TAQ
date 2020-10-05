@@ -1,4 +1,4 @@
 # TorQ-TAQ
-NYSE TAQ Loader in TorQ
+NYSE TAQ Loader in using kdb+ and TorQ
 
-Initial development documentation is here: https://aquaqanalytics.sharepoint.com/:f:/g/Development/Eor-kHuNGARApbknZ677_aYBd-Fgr-HddFlkSs7HWDfNOg
+An overview blog [is here](https://www.aquaq.co.uk/q/torq-taq-a-nyse-taq-loader/), further documentation is in the docs directory. 

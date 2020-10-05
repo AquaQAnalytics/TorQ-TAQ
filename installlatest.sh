@@ -82,4 +82,4 @@ echo "Files downloaded. Executing install script"
 
 bash installtorqapp.sh --torq TorQ-$torq_latest.tar.gz --releasedir deploy --data datatemp --installfile TorQ-TAQ-$torq_taq_latest.tar.gz
 
-mkdir datatemp/filedrop
+mkdir -p datatemp/filedrop

@@ -25,7 +25,7 @@ loadtaqfile:{[taqloaderparams;optionalparams]
         .lg.e[`loadtaqfile;errmsg:("Could not extract date in "),string taqloaderparams`filetoload];
         :buildreturndict[returndict;0h;errmsg]];
     // Check if file exists in filedrop directory, otherwise exit with error
-    $[taqloaderparams[`filetoload] in key[filedrop];
+    $[taqloaderparams[`filetoload] in key[.taq.filedrop];
         .lg.o[`loadtaqfile;raze "File successfully found in ",getenv[`TORQTAQFILEDROP]];
         doload:0b];
     if[not doload;.lg.e[`loadtaqfile;

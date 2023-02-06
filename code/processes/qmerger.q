@@ -1,10 +1,3 @@
-\d .taq
-
-hdbdir:@[value;`hdbdir;`:hdb]
-symdir:@[value;`symdir;`:symdir]
-tempdb:@[value;`tempdb;`:tempdb]
-mergedir:@[value;`mergedir;`:mergedir]
-
 \d .
 
 // reset temp hdb and update merged table

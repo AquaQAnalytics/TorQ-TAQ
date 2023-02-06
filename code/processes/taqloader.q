@@ -1,6 +1,6 @@
-hdbdir:@[value;`hdbdir;`:hdbdir]
-symdir:@[value;`symdir;`:symdir]
-tempdb:@[value;`tempdb;`:tempdb]
+hdbdir:@[value;`hdbdir;.taq.hdbdir]
+symdir:@[value;`symdir;.taq.symdir]
+tempdb:@[value;`tempdb;.taq.tempdb]
 filedrop:@[value;`filedrop;`:filedrop]
 optionalparams:@[value;`optionalparams;()!()]
 
@@ -69,7 +69,7 @@ executeload:{[p;fp;ftl;d;ft;em]
         {[e] .lg.e[`loadtaqfile;msg:"Failed to complete load with error: ",e];(0b;msg)}];
     if[0b~first loadmsg;:buildreturndict[d;0h;last loadmsg]];
     .lg.o[`fifoloader;(string ftl)," has successfully been loaded"];
-    syscmd["rm ",fifo];
+    syscmd["rm -f ",fifo];
     // assign value to table path only if table is successfully loaded here
     d[`tablepath]:hsym`$(string p[`dbdir]),"/",(string d`tabledate),"/",(string ft);
     buildreturndict[d;1h;em]

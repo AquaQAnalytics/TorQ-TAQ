@@ -45,7 +45,7 @@ finishload:{[q;r]
         fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergestarttime;:;.proc.cp[]];
         h:.servers.getserverbytype[`gateway;`w;`any];
         (neg h)(`.gw.asyncexecjpt;(`mergesplit;first r);`qmerger;{x};`finishmerge;0Wn)];
-        // if quotes are finihsed before nbbo and trade, call movetohdb here
+        // if quotes are finished before nbbo and trade, call movetohdb here
     if[mergecomplete and 2=sum exec loadstatus from fileloading where loadstatus=1h,filetype in `trade`nbbo;startmovetohdb[first r[`tabledate];first r[`tabletype]]];
   };
 

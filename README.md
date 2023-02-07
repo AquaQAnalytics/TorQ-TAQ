@@ -6,7 +6,9 @@ The TorQ-TAQ Loader architecture is an extension to TorQ, which efficiently load
 
 To download TorQ TAQ, get latest installation script and download it to the directory where you want your codebase to live
 
-`wget https://raw.githubusercontent.com/AquaQAnalytics/TorQ-TAQ/master/installlatest.sh`
+````
+wget https://raw.githubusercontent.com/AquaQAnalytics/TorQ-TAQ/master/installlatest.sh
+````
 
 Then run the following line in the same working directory
 
@@ -101,7 +103,7 @@ Here we just want to load in the NYSE trade data for date partition 2022.10.03 a
 2023.02.07D16:13:07.537313000|homer.aquaq.co.uk|orchestrator|orchestrator1|INF|alerter|adding /home/user/deploy/data/filedrop/EQY_US_ALL_TRADE_20221003.gz to alreadyprocessed table
 2023.02.07D16:13:07.537322000|homer.aquaq.co.uk|orchestrator|orchestrator1|INF|alerter|saving alreadyprocessed table to disk  
  ````
-3. Once the trade file has finished loading in, we can locate it within `deploy/tempdb/final/YYYY.MM.DD/trade`
+3. Once the trade file has finished loading in, we can locate it within `deploy/tempdb/final/2022.10.03/trade`
 ````
 hdb
 └── sym
@@ -160,4 +162,5 @@ tempdb
     └── 2022.10.03
 ````
 
-An overview blog [is here](https://www.aquaq.co.uk/q/torq-taq-a-nyse-taq-loader/), further documentation is in the docs [directory](docs/torqtaqtutorial.md). 
+
+>An overview blog [is here](https://www.aquaq.co.uk/q/torq-taq-a-nyse-taq-loader/), further documentation is in the docs [directory](docs/torqtaqtutorial.md). 

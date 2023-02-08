@@ -83,9 +83,55 @@ When the quote split file has been loaded successfully, it is merged using the m
 When the trade, nbbo and all 26 quote split files have been successfully loaded and merged, the orchestrator then calls the merge process to call the function which moves all of the loaded and merged data to the final hdb in its relevant date partition.
 
 ## Support Functionality ##
+### Saving to HDB ###
 
 We have included a function called `manualmovetohdb` – This function can be called with arguments `[date;filetype]` in the orchestrator to manually move loaded data to the hdb. date is a date atom and filetype is a symbol or list of symbols (any of trade, quote, or nbbo). By default, data is only moved when all files have been successfully loaded and merged. However, this can be called to move the data at a different point in time.
 
+### Changing Table Schema ###
+As was already indicated, TorQ-TAQ currently supports trade, quote, and national best bid offer (nbbo) files from the NYSE website. Although [taq.q](code/common/taq.q) contains functionality for adjusting the schema of these tables. Users can modify the columnames and datatypes of these tables to meet their needs or to use another format. This is will include changes to the dictionaires defined in `maketaqparams`. For instance, it is simple to update if a user loaded trade data from a different source with new column names.
+````
+    tradeparams:defaults,(!) . flip (
+        (`headers;`ticktime`exch`sym`cond`size`price`stop`corr`sequence`tradeid`cts`trf`parttime);
+        (`types;"JSSSIFBIJICCJ");
+        (`tablename;`trade);
+        (`separator;enlist"|");
+        (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
+        (`symdir;symdir);            // where we enumerate against
+        (`tempdb;tempdb);
+        (`dataprocessfunc;{[params;data] `sym`ticktime`exch`cond`size`price`stop`corr`sequence`cts`trf xcols delete from
+        (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data) where null ticktime});
+        (`date;.z.d)
+    );
+````
+In this example, we would be interested to change the headers to only include the following ```` `ticktime`exch`sym`cond`size`price`parttime ````. To achieve this, the following changes were made:
+````
+    tradeparams:defaults,(!) . flip (
+        (`headers;`ticktime`exch`sym`cond`size`price`parttime);
+        (`types;"JSSSIF      J");
+        (`tablename;`trade);
+        (`separator;enlist"|");
+        (`dbdir;hdbdir);             // this parameter is defined in the top level taqloader script
+        (`symdir;symdir);            // where we enumerate against
+        (`tempdb;tempdb);
+        (`dataprocessfunc;{[params;data] `sym`ticktime`exch`cond`size`price xcols delete from
+        (update sym:.Q.fu[{` sv `$" " vs string x}each;sym],ticktime:params[`date]+ timeconverter[ticktime],parttime:params[`date]+ timeconverter[parttime] from data) where null ticktime});
+        (`date;.z.d)
+    );
+````
+Now once trade data is decompressed and loaded, it will have the following schema:
+````
+q)meta trade
+c       | t f a
+--------| -----
+date    | d    
+sym     | s    
+ticktime| p    
+exch    | s    
+cond    | s    
+size    | i    
+price   | f    
+parttime| p 
+````
 ## Example ##
 Here we just want to load in the NYSE trade data for date partition 2022.10.03 and manually move it to the HDB
 

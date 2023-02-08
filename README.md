@@ -93,7 +93,7 @@ Here we just want to load in the NYSE trade data for date partition 2022.10.03 a
   
     `wget https://ftp.nyse.com/Historical%20Data%20Samples/DAILY%20TAQ/EQY_US_ALL_TRADE_20221003.gz`
 
-2. After this download is complete, the orchestrator will pick up on this file and being to decompress it within a taqloader process - an example log of this is shown below 
+2. After this download is complete, the orchestrator will pick up on this file and begin to decompress it within a taqloader process - an example log of this is shown below 
  ````
  2023.02.07D16:13:04.283306000|homer.aquaq.co.uk|orchestrator|orchestrator1|INF|alerter|running filealerter process
 2023.02.07D16:13:04.283375000|homer.aquaq.co.uk|orchestrator|orchestrator1|INF|alerter|searching for /home/user/deploy/data/filedrop/*.gz

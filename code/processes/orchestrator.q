@@ -39,14 +39,14 @@ finishload:{[q;r]
         fileloading[loadid]:@[fileloading[loadid];`loadendtime`loadstatus`loadmessage;:;(.proc.cp[];0h;r)];
         .lg.o[`finishload;r];:()];
     // updated monitoring stats
-    fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`loadendtime`loadstatus`loadmessage;:;(r[`loadendtime];r[`loadstatus];r[`loadmessage])];
+    fileloading[r[`loadid]]:first each@[fileloading[r[`loadid]];`loadendtime`loadstatus`loadmessage;:;(r[`loadendtime];r[`loadstatus];r[`loadmessage])];
     // if filetype is a quote invoke merger here
-    if[(r[`tabletype]~`quote) and "success"~r[`loadmessage];
+    if[(`quote~first r[`tabletype]) and ("success"~first r[`loadmessage]);
         fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergestarttime;:;.proc.cp[]];
         h:.servers.getserverbytype[`gateway;`w;`any];
-        (neg h)(`.gw.asyncexecjpt;(`mergesplit;4#r);`qmerger;{x};`finishmerge;0Wn)];
-        // if quotes are finihsed before nbbo and trade, call movetohdb here
-    if[mergecomplete and 2=sum exec loadstatus from fileloading where loadstatus=1h,filetype in `trade`nbbo;startmovetohdb[r[`tabledate]]];
+        (neg h)(`.gw.asyncexecjpt;(`mergesplit;first r);`qmerger;{x};`finishmerge;0Wn)];
+        // if quotes are finished before nbbo and trade, call movetohdb here
+    if[mergecomplete and 2=sum exec loadstatus from fileloading where loadstatus=1h,filetype in `trade`nbbo;startmovetohdb[first r[`tabledate];first r[`tabletype]]];
   };
 
 finishmerge:{[q;r]
@@ -55,17 +55,17 @@ finishmerge:{[q;r]
     fileloading[r[`loadid]]:@[fileloading[r[`loadid]];`mergeendtime`mergestatus`mergemessage;:;(r[`mergeendtime];r[`mergestatus];r[`mergemessage])];
     if[1b~r[`fullmergestatus];mergecomplete::1b];
     // if trade and nbbo are finished before quotes, movetohdb called here
-    if[mergecomplete and 2=sum exec loadstatus from fileloading where loadstatus=1h,filetype in `trade`nbbo;startmovetohdb[r[`tabledate]]];
+    if[mergecomplete and 2=sum exec loadstatus from fileloading where loadstatus=1h,filetype in `trade`nbbo;startmovetohdb[first r[`tabledate];first r[`tabletype]]];
   };
 
 finishmovetohdb:{[q;r]
     .lg.o[`finishmovetohdb;"Merged quote data, trade and nbbo data have successfully been moved to hdb"]
   };
 
-startmovetohdb:{[d]
+startmovetohdb:{[d;files]
     h:.servers.getserverbytype[`gateway;`w;`any];
         .lg.o[`startmovetohdb;"Moving quote, trade and nbbo data to hdb"]
-        (neg h)(`.gw.asyncexecjpt;(`movetohdb;d);`qmerger;{x};`finishmovetohdb;0Wn)
+        (neg h)(`.gw.asyncexecjpt;(`movepartohdb;d;files);`qmerger;{x};`finishmovetohdb;0Wn)
   };
 
 // async message to invoke loader process when new nyse file is found

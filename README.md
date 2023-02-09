@@ -66,9 +66,10 @@ Three files are currently supported: trade, quote, and national best bid offer (
 Depending on if the file recognised is a trade, quote or nbbo file, the way the data is saved behaves differently. 
 
 ## Trade/NBBO ##
-Trade/NBBO data is laoded to the temporary HDB - tempdb, located in `deploy/tempdb/final/YYYY.MM.DD/trade|nbbo/`
 
 **_NOTE:_** tempdb and hdb directories are created once a TAQ .gz file is loaded in - the paths to these directories are defined within [default.q](appconfig/settings/default.q)
+
+Trade/NBBO data is laoded to the temporary HDB - tempdb, located in `deploy/tempdb/final/YYYY.MM.DD/trade|nbbo/`
 
 By default, when Trade/NBBO data is loaded to the temporary HDB, it lives in the `deploy/tempdb/final/YYYY.MM.DD/` directory until all data from this day has been loaded. 
 

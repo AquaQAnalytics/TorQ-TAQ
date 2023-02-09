@@ -1,10 +1,10 @@
 # TorQ-TAQ
 
-The TorQ-TAQ Loader architecture is an extension to TorQ, which efficiently loads NYSE TAQ files using the streaming decompress algorithm with .Q.fpn  
+The TorQ-TAQ Loader architecture is an extension to TorQ, which efficiently loads NYSE TAQ files using the streaming decompress algorithm with .Q.fpn.
 
 # Quick Installisation
 
-To download TorQ TAQ, get latest installation script and download it to the directory where you want your codebase to live
+To download TorQ-TAQ, get latest installation script and download it to the directory where you want your codebase to live.
 
 ````
 wget https://raw.githubusercontent.com/AquaQAnalytics/TorQ-TAQ/master/installlatest.sh
@@ -37,7 +37,7 @@ Once this is complete, the necessary TorQ packages will be installed
 To start TorQ TAQ, run the following command within your terminal:
 
 ````
-$ ./bin/torq.sh start all
+$ ./deploy/bin/torq.sh start all
 15:36:23 | Starting discovery1...
 15:36:23 | Starting gateway1...
 15:36:23 | Starting orchestrator1...
@@ -45,7 +45,7 @@ $ ./bin/torq.sh start all
 15:36:24 | Starting taqloader2...
 15:36:24 | Starting qmerger1...
 
-$ ./bin/torq.sh summary
+$ ./deploy/bin/torq.sh summary
 TIME      |  PROCESS        |  STATUS  |  PID    |  PORT
 15:36:56  |  discovery1     |  up      |  21434  |  10610
 15:36:57  |  gateway1       |  up      |  21607  |  10611
@@ -85,10 +85,12 @@ When the trade, nbbo and all 26 quote split files have been successfully loaded 
 ## Support Functionality ##
 ### Saving to HDB ###
 
-We have included a function called `manualmovetohdb` – This function can be called with arguments `[date;filetype]` in the orchestrator to manually move loaded data to the hdb. date is a date atom and filetype is a symbol or list of symbols (any of trade, quote, or nbbo). By default, data is only moved when all files have been successfully loaded and merged. However, this can be called to move the data at a different point in time.
+We have included a function called `manualmovetohdb` – This function can be called with arguments `[date;filetype]` in the orchestrator process to manually move loaded data to the HDB. date is a date atom and filetype is a symbol or list of symbols (any of trade, quote, or nbbo). By default, data is only moved when all files have been successfully loaded and merged. However, this can be called to move the data at a different point in time.
 
 ### Changing Table Schema ###
-As was already indicated, TorQ-TAQ currently supports trade, quote, and national best bid offer (nbbo) files from the NYSE website. Although [taq.q](code/common/taq.q) contains functionality for adjusting the schema of these tables. Users can modify the columnames and datatypes of these tables to meet their needs or to use another format. This is will include changes to the dictionaires defined in `maketaqparams`. For instance, it is simple to update if a user loaded trade data from a different source with new column names.
+As was already mentioned, TorQ-TAQ currently supports trade, quote, and national best bid offer (nbbo) files from the NYSE website. Although [taq.q](code/common/taq.q) contains functionality for adjusting the schema of these tables. Users can modify the column names and datatypes of these tables to meet their needs or to use another format. This will include changes to the dictionaries defined in `maketaqparams`. For instance, taking the trade table schema from the NYSE format, we can update it so that it loads trade data from different soruces that may have different columns/datatypes.
+
+Taking the originial trade data paramters from `maketaqparams`
 ````
     tradeparams:defaults,(!) . flip (
         (`headers;`ticktime`exch`sym`cond`size`price`stop`corr`sequence`tradeid`cts`trf`parttime);
@@ -103,7 +105,9 @@ As was already indicated, TorQ-TAQ currently supports trade, quote, and national
         (`date;.z.d)
     );
 ````
-In this example, we would be interested to change the headers to only include the following ```` `ticktime`exch`sym`cond`size`price`parttime ````. To achieve this, the following changes were made:
+In this example, we would be interested to change the headers to only include the following ```` `ticktime`exch`sym`cond`size`price`parttime ````. 
+
+To achieve this, the following changes were made:
 ````
     tradeparams:defaults,(!) . flip (
         (`headers;`ticktime`exch`sym`cond`size`price`parttime);
@@ -133,7 +137,7 @@ price   | f
 parttime| p 
 ````
 ## Example ##
-Here we just want to load in the NYSE trade data for date partition 2022.10.03 and manually move it to the HDB
+Here we only want to load in NYSE trade data for date 2022.10.03 and manually move it to the HDB.
 
 1. Begin by downloading EQY_US_ALL_TRADE_20221003.gz from the NYSE website directly into your filedrop directory whilst your stacks are up
   

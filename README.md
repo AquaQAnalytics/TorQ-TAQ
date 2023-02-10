@@ -2,7 +2,7 @@
 
 The TorQ-TAQ Loader architecture is an extension to TorQ, which efficiently loads NYSE TAQ files using the streaming decompress algorithm with .Q.fpn.
 
-# Quick Installisation
+# Quick Installation
 
 To download TorQ-TAQ, get latest installation script and download it to the directory where you want your codebase to live.
 
@@ -90,7 +90,7 @@ We have included the `manualmovetohdb` function, which allows you to manually mo
 ### Changing Table Schema ###
 TorQ-TAQ is equipped to handle trade, quote, and national best bid offer (nbbo) files from the NYSE website, as previously noted. The functionality to customize the schema of these tables can be found in [taq.q](code/common/taq.q), enabling users to adjust the column names and datatypes to fit their requirements or to use a different format. This process involves modifying the dictionaries defined in maketaqparams. For example, the trade table schema from the NYSE format can be updated to load trade data from alternative sources that may have distinct columns or datatypes.
 
-Taking the originial trade data paramters from `maketaqparams`
+Taking the original trade data parameters from `maketaqparams`
 ````
     tradeparams:defaults,(!) . flip (
         (`headers;`ticktime`exch`sym`cond`size`price`stop`corr`sequence`tradeid`cts`trf`parttime);

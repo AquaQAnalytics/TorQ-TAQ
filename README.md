@@ -86,10 +86,9 @@ When the trade, nbbo and all 26 quote split files have been successfully loaded 
 ## Support Functionality ##
 ### Saving to HDB ###
 
-We have included a function called `manualmovetohdb` – This function can be called with arguments `[date;filetype]` in the orchestrator process to manually move loaded data to the HDB. date is a date atom and filetype is a symbol or list of symbols (any of trade, quote, or nbbo). By default, data is only moved when all files have been successfully loaded and merged. However, this can be called to move the data at a different point in time.
-
+We have included the `manualmovetohdb` function, which allows you to manually move loaded data to the HDB by calling it with `[date;filetype]` arguments in the orchestrator. The date argument is a date atom and the filetype argument is a symbol or a list of symbols (trade, quote, or nbbo). By default, data is moved only after all files have been successfully loaded and merged. However, this function allows you to move the data at any point in time.
 ### Changing Table Schema ###
-As was already mentioned, TorQ-TAQ currently supports trade, quote, and national best bid offer (nbbo) files from the NYSE website. Although [taq.q](code/common/taq.q) contains functionality for adjusting the schema of these tables. Users can modify the column names and datatypes of these tables to meet their needs or to use another format. This will include changes to the dictionaries defined in `maketaqparams`. For instance, taking the trade table schema from the NYSE format, we can update it so that it loads trade data from different soruces that may have different columns/datatypes.
+TorQ-TAQ is equipped to handle trade, quote, and national best bid offer (nbbo) files from the NYSE website, as previously noted. The functionality to customize the schema of these tables can be found in [taq.q](code/common/taq.q), enabling users to adjust the column names and datatypes to fit their requirements or to use a different format. This process involves modifying the dictionaries defined in maketaqparams. For example, the trade table schema from the NYSE format can be updated to load trade data from alternative sources that may have distinct columns or datatypes.
 
 Taking the originial trade data paramters from `maketaqparams`
 ````
@@ -136,6 +135,14 @@ cond    | s
 size    | i    
 price   | f    
 parttime| p 
+````
+To clarify, the files dropped in the filedrop directory are compared against the names listed in the runload function within the orchestrator.
+````
+    filetype: $[
+        file like "*TRADE*";`trade;
+        file like "*SPLITS*";`quote;
+        file like "*NBBO*";`nbbo;
+        [.lg.e[`fifoloader;errmsg:(string file)," is an unknown or unsupported file type"];'errmsg]];
 ````
 ## Example ##
 Here we only want to load in NYSE trade data for date 2022.10.03 and manually move it to the HDB.
@@ -214,4 +221,4 @@ tempdb
 ````
 
 
->An overview blog [is here](https://www.aquaq.co.uk/q/torq-taq-a-nyse-taq-loader/), further documentation is in the docs [directory](docs/torqtaqtutorial.md). 
+>An overview blog [is here](https://www.aquaq.co.uk/q/torq-taq-a-nyse-taq-loader/), further documentation is in the [docs](docs/torqtaqtutorial.md) directory. 
